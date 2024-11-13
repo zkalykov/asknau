@@ -1,0 +1,14 @@
+/* src/index.css */
+
+/* Existing Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure the root elements take up the full height */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
