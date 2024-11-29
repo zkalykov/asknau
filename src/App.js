@@ -286,6 +286,7 @@ function App() {
                 <a
                   href="https://github.com/zkalykov/asknau"
                   className="block px-4 py-2 hover:bg-gray-700"
+                  target="_blank"
                 >
                   Github
                 </a>
