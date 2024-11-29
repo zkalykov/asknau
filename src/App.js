@@ -277,11 +277,18 @@ function App() {
                   className="block px-4 py-2 hover:bg-gray-700"
                   onClick={(e) => {
                     e.preventDefault();
-                    openModal('More');
+                    openModal('About');
                     setProfileMenuOpen(false);
                   }}
                 >
-                  More
+                  About
+                </a>
+                <a
+                  href="https://github.com/zkalykov/asknau"
+                  className="block px-4 py-2 hover:bg-gray-700"
+                  target="_blank"
+                >
+                  Github
                 </a>
               </div>
             )}
@@ -337,7 +344,7 @@ function App() {
                   sendMessage();
                 }
               }}
-              placeholder="Message..."
+              placeholder="Message AskNAU..."
               autoComplete="off"
               className="flex-grow p-2 rounded-l-md bg-gray-800 text-white"
             />
@@ -396,15 +403,14 @@ function App() {
 
 
 
-            {modalContent === 'More' && (
+            {modalContent === 'About' && (
               <div className="space-y-4">
                 <p>AskNAU is a specialized AI model designed to assist students at North American universities by answering their questions accurately and efficiently. This fine-tuned system is crafted to handle a wide range of academic and campus-related queries with contextual relevance and reliability.</p>
                 
                 <p>
                   The development team includes 
                   <span className="underline"> Software Engineer Zhyrgalbek Kalykov</span>, 
-                  <span className="underline"> Supervisor Sabina Adhikari</span>, and 
-                  <span className="underline"> Designer Ayana Ibragim Kyzy</span>, who have worked together to ensure AskNAU’s technical precision and user-friendly experience.
+                  <span className="underline"> Supervisor Sabina Adhikari</span>, who have worked together to ensure AskNAU’s technical precision and user-friendly experience.
                 </p>
                 
                 <h3 className="font-bold" style={{ color: 'rgba(6, 147, 227, 1)' }}>Policies</h3>
