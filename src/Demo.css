@@ -1,0 +1,120 @@
+/* src/Demo.css */
+.demo-page {
+    background-color: #0e0e0e;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .demo-container {
+    width: 100%;
+    max-width: 1024px;
+    padding: 24px;
+    background-color: #0e0e0e;
+    border-radius: 8px;
+  }
+  
+  .demo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  
+  .demo-title {
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .demo-navigation {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .demo-navigation a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+  
+  .demo-navigation a:hover {
+    color: rgba(6, 147, 227, 1);
+  }
+  
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+  }
+  
+  .demo-description p {
+    color: #d1d5db;
+    line-height: 1.625;
+    margin-bottom: 16px;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 16px;
+  }
+  
+  .demo-section {
+    margin-top: 32px;
+  }
+  
+  .demo-section p {
+    color: #d1d5db;
+    line-height: 1.625;
+    margin-bottom: 16px;
+  }
+  
+  .demo-section p span {
+    color: rgba(6, 147, 227, 1);
+  }
+  
+  .demo-section p .font-bold {
+    font-weight: bold;
+  }
+
+.try-button {
+    padding: 8px 16px;
+    background-color: rgba(6, 147, 227, 1);
+    color: #ffffff;
+    border-radius: 4px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s;
+  }
+  
+  .try-button:hover {
+    background-color: #055f94;
+  }
+  
+  .demo-navigation {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  
+  .demo-navigation a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+  
+  .demo-navigation a:hover {
+    color: rgba(6, 147, 227, 1);
+  }
