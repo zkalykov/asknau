@@ -58,7 +58,7 @@ function Register() {
       <div className="login-container">
         <h2 className="login-title">Sign Up</h2>
           <p className="register-link">
-            Don't know what is AskNAU? {' '}
+            Don't know what is AskNAU - {' '}
             <Link to="/demo">
               Watch Demo
             </Link>

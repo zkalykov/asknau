@@ -108,7 +108,7 @@ function Chat() {
         }
 
         const data = await response.json();
-        setUserName(data.name);
+        setUserName(data.full_name);
         setUserEmail(data.email);
       } catch (error) {
         console.error('Failed to fetch user profile:', error);
@@ -335,7 +335,7 @@ function Chat() {
                   className="block px-4 py-2 hover:bg-gray-700 text-left w-full"
                   onClick={(e) => {
                     e.preventDefault();
-                    navigate('/about'); // Redirect to Demo page
+                    navigate('/demo'); // Redirect to Demo page
                     setProfileMenuOpen(false);
                   }}
                 >
@@ -407,7 +407,7 @@ function Chat() {
                   sendMessage();
                 }
               }}
-              placeholder="Message..."
+              placeholder="Message AskNAU..."
               autoComplete="off"
               className="flex-grow p-2 rounded-l-md bg-gray-800 text-white"
             />
@@ -462,12 +462,6 @@ function Chat() {
                 </p>
                 <p>
                   <span className="font-semibold">Email:</span> {userEmail}
-                </p>
-                <p>
-                  <span className="font-semibold">AskNAU</span> is your AI for
-                  answering North American university questions, limited to{' '}
-                  <span className="font-semibold">10 daily queries</span> per user
-                  for fair access.
                 </p>
               </div>
             )}

@@ -1,5 +1,5 @@
 /* src/Demo.css */
-.demo-page {
+  .demo-page {
     background-color: #0e0e0e;
     min-height: 100vh;
     display: flex;
@@ -10,7 +10,7 @@
   .demo-container {
     width: 100%;
     max-width: 1024px;
-    padding: 24px;
+    padding: 36px;
     background-color: #0e0e0e;
     border-radius: 8px;
   }
@@ -25,7 +25,7 @@
   .demo-title {
     font-size: 1.875rem;
     font-weight: bold;
-    color: #ffffff;
+    color: #eeeeee;
   }
   
   .demo-navigation {
@@ -34,12 +34,8 @@
   }
   
   .demo-navigation a {
-    color: #ffffff;
+    color: #eeeeee;
     text-decoration: none;
-  }
-  
-  .demo-navigation a:hover {
-    color: rgba(6, 147, 227, 1);
   }
   
   .video-container {
@@ -60,7 +56,7 @@
   }
   
   .demo-description p {
-    color: #d1d5db;
+    color: #eeeeee;
     line-height: 1.625;
     margin-bottom: 16px;
   }
@@ -68,7 +64,7 @@
   .section-title {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #ffffff;
+    color: #eeeeee;
     margin-bottom: 16px;
   }
   
@@ -77,14 +73,11 @@
   }
   
   .demo-section p {
-    color: #d1d5db;
+    color: #eeeeee;
     line-height: 1.625;
     margin-bottom: 16px;
   }
   
-  .demo-section p span {
-    color: rgba(6, 147, 227, 1);
-  }
   
   .demo-section p .font-bold {
     font-weight: bold;
@@ -93,7 +86,7 @@
 .try-button {
     padding: 8px 16px;
     background-color: rgba(6, 147, 227, 1);
-    color: #ffffff;
+    color: #eeeeee;
     border-radius: 4px;
     font-weight: bold;
     text-decoration: none;
@@ -111,10 +104,25 @@
   }
   
   .demo-navigation a {
-    color: #ffffff;
+    color: #eeeeee;
     text-decoration: none;
   }
   
-  .demo-navigation a:hover {
-    color: rgba(6, 147, 227, 1);
+
+  h2{
+    color: #eeeeee;
+  }
+  @media (max-width: 768px) {
+    .demo-navigation {
+      flex-direction: column; /* Stack navigation items vertically */
+      gap: 8px; /* Reduce gap between items */
+      align-items: flex-start; /* Align items to the start for better readability */
+      width: 100%; /* Ensure navigation takes full width if needed */
+      margin-top: 12px; /* Add spacing from other elements */
+    }
+  
+    .demo-navigation .try-button {
+      margin-left: 0; /* Reset margin for mobile view */
+      align-self: flex-end; /* Align Try Now button to the right */
+    }
   }
