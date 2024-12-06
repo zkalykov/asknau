@@ -1,128 +1,129 @@
-/* src/Demo.css */
-  .demo-page {
-    background-color: #0e0e0e;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .demo-container {
-    width: 100%;
-    max-width: 1024px;
-    padding: 36px;
-    background-color: #0e0e0e;
-    border-radius: 8px;
-  }
-  
-  .demo-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-  
-  .demo-title {
-    font-size: 1.875rem;
-    font-weight: bold;
-    color: #eeeeee;
-  }
-  
-  .demo-navigation {
-    display: flex;
-    gap: 16px;
-  }
-  
-  .demo-navigation a {
-    color: #eeeeee;
-    text-decoration: none;
-  }
-  
-  .video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    margin-bottom: 24px;
-  }
-  
-  .video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-  }
-  
-  .demo-description p {
-    color: #eeeeee;
-    line-height: 1.625;
-    margin-bottom: 16px;
-  }
-  
-  .section-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #eeeeee;
-    margin-bottom: 16px;
-  }
-  
-  .demo-section {
-    margin-top: 32px;
-  }
-  
-  .demo-section p {
-    color: #eeeeee;
-    line-height: 1.625;
-    margin-bottom: 16px;
-  }
-  
-  
-  .demo-section p .font-bold {
-    font-weight: bold;
-  }
+/* General Styles */
+.demo-page {
+  background-color: #0e0e0e; /* Dark background */
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+.demo-container {
+  width: 100%;
+  max-width: 1024px;
+  padding: 36px;
+  background-color: #1c1c1e; /* Slightly lighter dark background for contrast */
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* subtle shadow for depth */
+}
+
+/* Header Styles */
+.demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.demo-title {
+  font-size: 2.25rem; /* Matches Apple's large titles */
+  font-weight: 600; /* Semi-bold weight for prominence */
+  color: #f5f5f7; /* Light text color */
+}
+
+.demo-navigation {
+  display: flex;
+  gap: 16px;
+}
 
 .try-button {
-    padding: 8px 16px;
-    background-color: rgba(6, 147, 227, 1);
-    color: #eeeeee;
-    border-radius: 4px;
-    font-weight: bold;
-    text-decoration: none;
-    transition: background-color 0.3s;
-  }
-  
-  .try-button:hover {
-    background-color: #055f94;
-  }
-  
-  .demo-navigation {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-  }
-  
-  .demo-navigation a {
-    color: #eeeeee;
-    text-decoration: none;
-  }
-  
+  padding: 10px 18px;
+  background-color: #0071e3; /* Apple's blue */
+  color: #ffffff;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  font-size: 1rem; /* Consistent font size for buttons */
+}
 
-  h2{
-    color: #eeeeee;
+.try-button:hover {
+  background-color: #005bb5; /* Darker blue for hover */
+}
+
+/* Section Styles */
+.section-title {
+  font-size: 1.75rem; /* Subtitle size */
+  font-weight: 600;
+  color: #f5f5f7;
+  margin-bottom: 16px;
+}
+
+.demo-section,
+.demo-description {
+  margin-top: 32px;
+}
+
+.demo-description p,
+.demo-section p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: #a1a1a6; /* Light gray for body text */
+}
+
+/* Video Container */
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+  height: 0;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  background: #2c2c2e;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+}
+
+/* Code Styles */
+code {
+  background-color: #2c2c2e; /* Dark gray background */
+  color: #f5f5f7; /* Light text color */
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .demo-navigation {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    max-width: 100%;
+    margin-top: 12px;
   }
-  @media (max-width: 768px) {
-    .demo-navigation {
-      flex-direction: column; /* Stack navigation items vertically */
-      gap: 8px; /* Reduce gap between items */
-      align-items: flex-start; /* Align items to the start for better readability */
-      width: 100%; /* Ensure navigation takes full width if needed */
-      margin-top: 12px; /* Add spacing from other elements */
-    }
-  
-    .demo-navigation .try-button {
-      margin-left: 0; /* Reset margin for mobile view */
-      align-self: flex-end; /* Align Try Now button to the right */
-    }
+
+  .demo-navigation .try-button {
+    margin-left: 0;
+    align-self: flex-end;
+    width: 100%; /* Button takes full width on smaller screens */
+    padding: 8px 16px; /* Adjust padding to ensure text fits well */
+    font-size: 1rem; /* Adjust font size if necessary to fit the button */
+    white-space: nowrap; /* Prevents the text from wrapping */
+    overflow: hidden; /* Keeps the text within the button's boundaries */
+    text-overflow: ellipsis; /* Adds an ellipsis if the text is too long to fit */
   }
+
+  .demo-title {
+    font-size: 1.875rem; /* Slightly smaller font size on mobile */
+  }
+}
+

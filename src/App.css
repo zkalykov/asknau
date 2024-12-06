@@ -1,10 +1,11 @@
-/* src/App.css */
-html,
-body,
-#root {
+html, body, #root {
   height: 100%;
   margin: 0;
+  font-family: 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  background-color: #121212; /* Darker background for better contrast */
+  color: #E0E0E0; /* Softer white for text */
 }
+
 
 body {
   background-color: #0e0e0e;
