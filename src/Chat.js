@@ -294,7 +294,7 @@ function Chat() {
   };
 
   return (
-    <div className="app-container text-gray-300 flex items-center justify-center h-screen">
+    <div className="app-container text-gray-300 flex items-center justify-center h-full">
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
         {/* Chat Header */}
         <div className="chat-header p-4 flex items-center justify-between">
