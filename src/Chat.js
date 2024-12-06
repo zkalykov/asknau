@@ -90,7 +90,7 @@ function Chat() {
   const fetchUserProfile = useCallback(
     async (token) => {
       try {
-        const response = await fetch('http://127.0.0.1:5000/profile', {
+        const response = await fetch('https://asknau-backend-20d79e207a54.herokuapp.com/profile', {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -225,7 +225,7 @@ function Chat() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/ask', {
+      const response = await fetch('https://asknau-backend-20d79e207a54.herokuapp.com/ask', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
