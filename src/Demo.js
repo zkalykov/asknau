@@ -1,109 +1,103 @@
-// src/Demo.js
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './Demo.css'; // Import the new CSS file
+import './Demo.css';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGithub } from '@fortawesome/free-brands-svg-icons';
+import { faUpRightFromSquare, faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
+import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
+
 
 function Demo() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(prev => !prev); // This ensures we always get the current state
+  };
+
   return (
-    <div className="demo-page">
-      <div className="demo-container">
-        {/* Header */}
-        <div className="demo-header">
-          <div className="flex items-center">
-            <span className="demo-title">Welcome to AskNAU</span>
-          </div>
-          
-          <div className="demo-navigation">
-            <Link to="/chat" className="try-button">
+    <div className="Demo">
+      <nav className="navbar">
+        <div className="navbar-logo">
+          <img src='logo192.png' alt="AskNAU logo" />
+          <span>AskNAU</span>
+        </div>
+
+        <button className="menu-icon" onClick={toggleMenu}>
+          <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} />
+        </button>
+
+        <ul className={`navbar-links ${isMenuOpen ? 'open' : ''}`}>
+          <li>
+            <a href="https://github.com/zkalykov/asknau" target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faGithub} style={{ marginRight: '5px' }} />
+              Github
+            </a>
+          </li>
+          <li>
+            <Link className={'try-now'} to="/chat">
+              <FontAwesomeIcon icon={faUpRightFromSquare} style={{ marginRight: '10px' }} />
               Try Now
             </Link>
-          </div>
-        </div>
-        {/* Video Section */}
-        <div>
-          <div className="video-container">
-            <iframe
-              src="https://www.youtube.com/embed/ujw0dVzNE_w9V2FN"
-              title="AskNAU Demo Video"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        </div>
-        
-        
+          </li>
+        </ul>
+      </nav>
 
-        <div className="demo-description">
-        <h2 className="section-title">ℹ️ About</h2>
-          <p>
-            <strong>AskNAU</strong> is your AI-powered assistant designed to help you navigate the North American University experience. Whether you have questions about admissions, courses, campus life, or need guidance on academic resources, AskNAU is here to provide accurate and timely information.
-          </p>
-        </div>
-        
-        <div className="demo-description">
-        <h2 className="section-title">🧑‍💻️ How it works?</h2>
-          <p>
-          It is powered by the GPT latest model, a cutting-edge language processing AI developed by OpenAI and Machine Learning models according local databases. This model allows AskNAU to understand and respond to a wide range of queries with human-like accuracy.
-          </p>
-        </div>
-        
-        <div className="demo-section">
-          <h2 className="section-title">🚀 Contributions</h2>
-          <p>
-            AskNAU was founded by Zhyrgalbek Kalykov and supervised by Professor Sabina Adhikari, Computer Science Department at North American University.
-          </p>
-          <p>
-            If you would like to contribute to the AskNAU project, we are open to collaborations on GitHub. See our developers' section.
-          </p>
-        </div>
+      <h1 className='first-word'>First ever AI assistant for NAU students</h1>
+      <h1 className='second-word'>Meet AskNAU</h1>
 
-        <div className="demo-section">
-          <h2 className="section-title">👮 Policies</h2>
-          <p>
-            AskNAU tracks IP addresses to monitor usage, allowing up to 10 daily messages per user. This ensures fair access and optimal performance for all.
-          </p>
-          <p>
-            We store names, emails, hashed passwords, account creation dates, and the dates and times of logins and logouts, along with the IP addresses of the devices used. This helps keep your account secure. We do not share sensitive personal information externally. However, it's important for users to know that their prompts may be viewed by developers for troubleshooting and system improvement purposes. Therefore, users should also avoid sharing sensitive personal details through their prompts.
-          </p>
-        </div>
-        <div className="demo-section">
-          <h2 className="section-title">🧑‍⚖️ Legal</h2>
-          <p>
-            By accessing and using AskNAU, you agree to adhere to the terms of use outlined herein. While we strive to ensure the accuracy and reliability of the information provided by AskNAU, we do not guarantee the correctness or completeness of the content made available. AskNAU, including its developers and affiliates, disclaims all liability for inaccuracies, errors, or any misunderstandings that may arise from the information provided.
-          </p>
-          <p>
-            Users are responsible for the authenticity of the information they submit and should refrain from sharing sensitive personal information. We take user privacy seriously and implement robust security measures to protect user data, but we cannot be held liable for breaches caused by unauthorized access beyond our control. All user data is stored securely on servers provided by Heroku and Vercel.
-          </p>
-          <p>
-            By using AskNAU, you accept that your interactions with the system may be monitored and reviewed by the development team for quality assurance and improvement purposes. Your continued use of AskNAU signifies your acceptance of these terms and any modifications made to them in the future.
-          </p>
-        </div>
-
-        <div className="demo-section">
-          <h2 className="section-title">☎️ Contact</h2>
-          <p>
-            For any questions, feedback, or concerns, please contact us at <a href="mailto:zhyrgalbekkalykov@gmail.com">zhyrgalbekkalykov@gmail.com</a> Zhyrgalbek Kalykov or for Professor Sabina Adhikari at <a href="mailto:sadhikari@na.edu">sadhikari@na.edu</a>.
-          </p>
-        </div>
-
-        <div className="demo-section">
-          <h2 className="section-title text-white">⚒️ For developers</h2>
-          <p className="text-gray-300">
-            If you're interested in the technical details or want to contribute to the AskNAU project, you can access our source code and development documents on GitHub. Below are the steps to download and run the React application on your local machine:
-          </p>
-          <ol className="list-decimal ml-4 text-gray-300">
-            <li>Clone the repository from GitHub by running <code className="underline">git clone https://github.com/zkalykov/asknau.git</code> in your terminal.</li>
-            <li>Navigate into the project directory with <code className="underline">cd AskNAU</code>.</li>
-            <li>Install the necessary dependencies by running <code className="underline">npm install</code>.</li>
-            <li>Start the application locally with <code className="underline">npm start</code>. This will launch the app in your browser at <code className="underline">http://localhost:3000</code>.</li>
-          </ol>
-          <p className="text-gray-300">
-            You can find further documentation and ways to get involved by visiting our <a href="https://github.com/zkalykov/asknau" className="text-blue-500 hover:text-blue-700 transition duration-300 ease-in-out">GitHub page</a>.
-          </p>
-        </div>
-
+      <div className="demo-content">
+        <video autoPlay muted loop playsInline>
+          <source src="https://download-video-ak.vimeocdn.com/v3-1/playback/857629e2-d70c-4660-8c77-fb33b595e17c/efe429d6-7a7c76c8?__token__=st=1733800596~exp=1733814996~acl=%2Fv3-1%2Fplayback%2F857629e2-d70c-4660-8c77-fb33b595e17c%2Fefe429d6-7a7c76c8%2A~hmac=520e74a0fa6484bd6435e35c1d83a1ad5cdd20b424fe4d80b67495680ed95136&r=dXMtd2VzdDE%3D" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
+
+
+      <div className="can-do">
+        <div className="feature">
+          <h3>
+            <FontAwesomeIcon icon={faFile}style={{ marginRight: '10px' }}  />
+            Courses
+          </h3>
+          <p>AskNAU can provide information about courses and its prerequisites.</p>
+        </div>
+        <div className="feature">
+          <h3>
+            <FontAwesomeIcon icon={farStar} style={{ marginRight: '10px' }} />
+            Grades
+          </h3>
+          <p>By simply uploading your transcript you can see your GPA or get help with that.</p>
+        </div>
+        <div className="feature">
+          <h3>
+            <FontAwesomeIcon icon={faPenToSquare} style={{ marginRight: '10px' }} />
+            Plan
+          </h3>
+          <p>You can plan your career or see what classes you can take for next semester.</p>
+        </div>
+      </div>
+
+      <h1 className='first-word'>
+        Watch Demo
+        <FontAwesomeIcon icon={faArrowDown} style={{ marginLeft: '10px' }} />
+      </h1>
+
+      <div className="youtube-video-wrapper">
+        <iframe
+          className="youtube-video"
+          src="https://www.youtube.com/embed/HK6y8DAPN_0"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
+
+
+      
     </div>
   );
 }
