@@ -8,6 +8,7 @@ import { faUpRightFromSquare, faBars, faTimes } from '@fortawesome/free-solid-sv
 import { faFile, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 
 function Demo() {
@@ -47,7 +48,12 @@ function Demo() {
 
       <h1 className='first-word'>First ever AI assistant for NAU students</h1>
       <h1 className='second-word'>Meet AskNAU</h1>
-
+      <center>
+        <Link className={'click-here'} to="/chat">
+          <FontAwesomeIcon icon={faUpRightFromSquare} style={{ marginRight: '10px' }} />
+          Click here to start
+        </Link>
+      </center>
       <div className="demo-content">
         <video autoPlay muted loop playsInline>
           <source src="https://download-video-ak.vimeocdn.com/v3-1/playback/857629e2-d70c-4660-8c77-fb33b595e17c/efe429d6-7a7c76c8?__token__=st=1733800596~exp=1733814996~acl=%2Fv3-1%2Fplayback%2F857629e2-d70c-4660-8c77-fb33b595e17c%2Fefe429d6-7a7c76c8%2A~hmac=520e74a0fa6484bd6435e35c1d83a1ad5cdd20b424fe4d80b67495680ed95136&r=dXMtd2VzdDE%3D" type="video/mp4" />
@@ -80,9 +86,9 @@ function Demo() {
         </div>
       </div>
 
-      <h1 className='first-word'>
+      <h1 className='first-word' style={{paddingBottom:'20px'}}>
+      <FontAwesomeIcon icon={faArrowDown} style={{ marginRight: '10px' }} />
         Watch Demo
-        <FontAwesomeIcon icon={faArrowDown} style={{ marginLeft: '10px' }} />
       </h1>
 
       <div className="youtube-video-wrapper">
@@ -97,6 +103,17 @@ function Demo() {
       </div>
 
 
+      <h1 className='first-word'>
+        <FontAwesomeIcon icon={faPlus} style={{ marginRight: '10px'}}/>
+          More
+        </h1>
+      <div className="how-works">
+
+        <h3>Project Idea</h3>
+        <p>This project founded by Zhyrgalbek Kalykov and supervised by Sabina Akhikary. Every year we have seen students asking same question again and again, and waiting days or weeks to get info, so we stored thousands of questions and fine tuned GPT so now it can answer them.</p>
+        
+        
+      </div>
       
     </div>
   );
