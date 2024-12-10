@@ -56,7 +56,7 @@ function Demo() {
       </center>
       <div className="demo-content">
         <video autoPlay muted loop playsInline>
-          <source src="https://download-video-ak.vimeocdn.com/v3-1/playback/857629e2-d70c-4660-8c77-fb33b595e17c/efe429d6-7a7c76c8?__token__=st=1733800596~exp=1733814996~acl=%2Fv3-1%2Fplayback%2F857629e2-d70c-4660-8c77-fb33b595e17c%2Fefe429d6-7a7c76c8%2A~hmac=520e74a0fa6484bd6435e35c1d83a1ad5cdd20b424fe4d80b67495680ed95136&r=dXMtd2VzdDE%3D" type="video/mp4" />
+          <source src="https://download-video-ak.vimeocdn.com/v3-1/playback/857629e2-d70c-4660-8c77-fb33b595e17c/efe429d6-7a7c76c8?__token__=st=1733815200~exp=1733829600~acl=%2Fv3-1%2Fplayback%2F857629e2-d70c-4660-8c77-fb33b595e17c%2Fefe429d6-7a7c76c8%2A~hmac=232230e8aa1d0e98aee2b7e06984ae0d3b3e1708726f49773d62f6521256a159&r=dXMtd2VzdDE%3D" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
       </div>
@@ -105,7 +105,7 @@ function Demo() {
 
       <h1 className='first-word'>
         <FontAwesomeIcon icon={faPlus} style={{ marginRight: '10px'}}/>
-          More
+          Read More
         </h1>
       <div className="how-works">
 

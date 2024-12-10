@@ -259,11 +259,10 @@ video {
   font-size: 1.8rem; /* Larger font size for headings */
   margin-bottom: 10px; /* Space below the heading */
   color: #0077cc; /* A blue color for distinction */
-  font-weight: bold;
 }
 
 .how-works p {
-  font-size: 1.3rem; /* Larger font size for paragraph text */
-  line-height: 1.7; /* Increased line height for better legibility */
+  font-size: 1.2rem; /* Larger font size for paragraph text */
+  line-height: 1.6; /* Increased line height for better legibility */
 }
 
