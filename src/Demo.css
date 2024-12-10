@@ -245,7 +245,7 @@ video {
 }
 
 .how-works {
-  height: 100vh;
+  
   padding: 20px; /* Adds padding around the content */
   
   color: #aaa; /* Darker text color for contrast */
@@ -264,5 +264,13 @@ video {
 .how-works p {
   font-size: 1.2rem; /* Larger font size for paragraph text */
   line-height: 1.6; /* Increased line height for better legibility */
+}
+
+
+
+.footer {
+  text-align: center;
+  padding:40px;
+  color:#aaa
 }
 

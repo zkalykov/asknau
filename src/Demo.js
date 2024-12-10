@@ -114,6 +114,12 @@ function Demo() {
         
         
       </div>
+
+
+      <div className="footer">
+        © AskNAU. All rights reserved.
+      </div>
+
       
     </div>
   );

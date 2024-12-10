@@ -1,8 +1,14 @@
 // src/Chat.js
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import './App.css';
+import './Chat.css';
 import { useNavigate } from 'react-router-dom';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
@@ -299,7 +305,10 @@ function Chat() {
         {/* Chat Header */}
         <div className="chat-header p-4 flex items-center justify-between">
           <div className="flex items-center">
-            <span className="text-2xl font-bold">AskNAU</span>
+            <span className="text-2xl font-bold">
+              
+              AskNAU
+              </span>
             <span
               style={{ color: 'rgba(6,147,227,1)' }}
               className="text-x font-normal ml-2"
@@ -315,6 +324,7 @@ function Chat() {
               className="w-8 h-8 rounded-full cursor-pointer"
               onClick={toggleProfileMenu}
             />
+            
             {profileMenuOpen && (
               <div
                 id="profile-menu"
@@ -322,27 +332,30 @@ function Chat() {
                 className="absolute right-0 mt-2 w-48 rounded-md shadow-lg"
               >
                 <button
-                  className="block px-4 py-2 hover:bg-gray-700 text-left w-full"
+                  className="block px-4 py-2  text-left w-full arkasy"
                   onClick={(e) => {
                     e.preventDefault();
                     openModal('Profile');
                     setProfileMenuOpen(false);
                   }}
                 >
+                  <FontAwesomeIcon icon={faUser} style={{ marginRight: '10px' }} />
+
                   Profile
                 </button>
                 <button
-                  className="block px-4 py-2 hover:bg-gray-700 text-left w-full"
+                  className="block px-4 py-2  text-left w-full arkasy"
                   onClick={(e) => {
                     e.preventDefault();
                     navigate('/demo'); // Redirect to Demo page
                     setProfileMenuOpen(false);
                   }}
                 >
+                  <FontAwesomeIcon icon={faPlay} style={{ marginRight: '10px' }} />
                   Demo
                 </button>
                 <button
-                  className="block px-4 py-2 hover:bg-gray-700 text-left w-full"
+                  className="block px-4 py-2  text-left w-full arkasy"
                   onClick={(e) => {
                     e.preventDefault();
                     // Handle logout
@@ -351,6 +364,8 @@ function Chat() {
                     setProfileMenuOpen(false);
                   }}
                 >
+                  <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: '10px' }}/>
+
                   Logout
                 </button>
               </div>
