@@ -1,42 +1,26 @@
-// src/Chat.js
-
+// Chat.js
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Chat.css';
-import { useNavigate } from 'react-router-dom';
-
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-regular-svg-icons';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
-import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
-
+import {
+  faUser,
+  faPlay,
+  faRightFromBracket,
+  faClockRotateLeft,
+  faPlus,
+} from '@fortawesome/free-solid-svg-icons';
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
-    if (!navigator.clipboard) {
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-      try {
-        document.execCommand('copy');
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1000);
-      } catch (err) {
-        alert('Failed to copy text.');
-      }
-      document.body.removeChild(textArea);
-      return;
-    }
-
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 1000);
     } catch (error) {
-      alert('Failed to copy text. Your browser may not support this feature.');
+      alert('Failed to copy text.');
     }
   };
 
@@ -54,7 +38,7 @@ function CopyButton({ text }) {
       ) : (
         <svg fill="currentColor" viewBox="0 0 20 20">
           <path d="M8 2a2 2 0 00-2 2v2h2V4h8v8h-2v2h2a 2 2 0 002-2V4a 2 2 0 00-2-2H8z"></path>
-          <path d="M2 8a2 2 0 012-2h8a 2 2 0 012 2v8a 2 2 0 01-2 2H4a 2 2 0 01-2-2V8z"></path>
+          <path d="M2 8a2 2 0 012-2h8a 2 2 0 012 2v8a 2 2 0 01-2 2H4a2 2 0 01-2-2V8z"></path>
         </svg>
       )}
     </button>
@@ -62,168 +46,59 @@ function CopyButton({ text }) {
 }
 
 function Chat() {
-  // State variables
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [botTyping, setBotTyping] = useState(false);
   const [userScrolled, setUserScrolled] = useState(false);
   const [showGoDownButton, setShowGoDownButton] = useState(false);
-  const lastScrollTop = useRef(0);
-  const chatBodyRef = useRef(null);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const profileMenuRef = useRef(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
-
-  // Add state variables for user information
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [chatHistory, setChatHistory] = useState([]);
+  const [chatId, setChatId] = useState(null);
 
-  const navigate = useNavigate();
+  const lastScrollTop = useRef(0);
+  const chatBodyRef = useRef(null);
+  const profileMenuRef = useRef(null);
+  const [urlChatId, setUrlChatId] = useState(null);
 
-  function openModal(content) {
-    setModalContent(content);
-    setModalOpen(true);
-  }
+  const API_BASE_URL = 'http://127.0.0.1:5000';
 
-  function closeModal() {
-    setModalOpen(false);
-    setModalContent('');
-  }
+  // Parse chat ID from URL
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const newChatId = queryParams.get('id');
+    setUrlChatId(newChatId);
+  }, [location.search]);
 
-  // Fetch user profile function
-  const fetchUserProfile = useCallback(
-    async (token) => {
-      try {
-        const response = await fetch('https://asknau-backend-20d79e207a54.herokuapp.com/profile', {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/login');
-          return;
-        }
-
-        if (!response.ok) {
-          throw new Error(`Server error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        setUserName(data.full_name);
-        setUserEmail(data.email);
-      } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-      }
-    },
-    [navigate]
-  );
-
-  const sendWelcomeMessage = useCallback(() => {
-    const welcomeMessage =
-      'Hello! And welcome to AskNAU. How can I assist you today?';
-    appendMessage(welcomeMessage, false);
+  const scrollToBottom = useCallback(() => {
+    if (chatBodyRef.current) {
+      chatBodyRef.current.scrollTo({
+        top: chatBodyRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+      setUserScrolled(false);
+    }
   }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-    } else {
-      sendWelcomeMessage();
-      fetchUserProfile(token); // Fetch user profile
-    }
-  }, [navigate, sendWelcomeMessage, fetchUserProfile]);
-
-  useEffect(() => {
-    if (!userScrolled) {
-      scrollToBottom();
-    }
-  }, [messages, userScrolled]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target) &&
-        event.target.nodeName !== 'IMG'
-      ) {
-        setProfileMenuOpen(false);
-      }
-    };
-
-    if (profileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [profileMenuOpen]);
-
-  const appendMessage = (content, isUser = true) => {
-    if (isUser) {
-      setMessages((prevMessages) => [...prevMessages, { content, isUser }]);
-    } else {
-      typeBotMessage(content);
-    }
+  const openModal = (content) => {
+    setModalContent(content);
+    setModalOpen(true);
   };
 
-  const typeBotMessage = (fullContent) => {
-    setBotTyping(true);
-    const words = fullContent.split(' ');
-    let i = 0;
-    const speed = 50;
-
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { content: '', isUser: false },
-    ]);
-
-    const typingInterval = setInterval(() => {
-      if (i < words.length) {
-        setMessages((prevMessages) => {
-          const lastMessage = prevMessages[prevMessages.length - 1];
-          const newContent =
-            (lastMessage.content ? lastMessage.content + ' ' : '') + words[i];
-          const updatedMessages = [
-            ...prevMessages.slice(0, -1),
-            { ...lastMessage, content: newContent },
-          ];
-          return updatedMessages;
-        });
-        i++;
-      } else {
-        clearInterval(typingInterval);
-        setBotTyping(false);
-      }
-    }, speed);
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalContent('');
   };
 
-  const sendMessage = async (message = null) => {
-    if (botTyping) return;
-
-    const msg = message || inputValue;
-    if (msg.trim() === '') return;
-
-    if (msg.length > 2000) {
-      setErrorMessage('Message cannot exceed 2000 characters.');
-      return;
-    } else {
-      setErrorMessage('');
-    }
-
-    appendMessage(msg, true);
-    if (!message) {
-      setInputValue('');
-    }
-
-    setBotTyping(true);
-
+  // Fetch user profile function
+  const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
@@ -231,17 +106,14 @@ function Chat() {
     }
 
     try {
-      const response = await fetch('https://asknau-backend-20d79e207a54.herokuapp.com/ask', {
-        method: 'POST',
+      const response = await fetch(`${API_BASE_URL}/profile`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ question: msg }),
       });
 
       if (response.status === 401) {
-        // Token is invalid or expired
         localStorage.removeItem('token');
         navigate('/login');
         return;
@@ -252,24 +124,66 @@ function Chat() {
       }
 
       const data = await response.json();
+      setUserName(data.full_name);
+      setUserEmail(data.email);
+    } catch (error) {
+      console.error('Failed to fetch user profile:', error);
+    }
+  }, [navigate]);
 
+  const appendMessage = (content, isUser = true) => {
+    setMessages((prev) => [...prev, { content, isUser }]);
+  };
+
+  const sendMessage = async () => {
+    if (botTyping) return;
+    const msg = inputValue.trim();
+    if (!msg) return;
+    if (msg.length > 2000) {
+      setErrorMessage('Message cannot exceed 2000 characters.');
+      return;
+    }
+    setErrorMessage('');
+    appendMessage(msg, true);
+    setInputValue('');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    setBotTyping(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/ask`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ question: msg, chat_id: chatId }),
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+
+      const data = await response.json();
       if (data.error) {
         appendMessage(`Error: ${data.error}`, false);
       } else {
-        typeBotMessage(data.answer);
+        setChatId(data.chat_id);
+        appendMessage(data.answer, false);
       }
     } catch (error) {
       appendMessage(`Error: ${error.message}`, false);
-    }
-  };
-
-  const scrollToBottom = () => {
-    if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTo({
-        top: chatBodyRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
-      setUserScrolled(false);
+    } finally {
+      setBotTyping(false);
     }
   };
 
@@ -282,9 +196,7 @@ function Chat() {
       ) < 1;
 
     if (currentScrollTop > lastScrollTop.current && !isAtBottom) {
-      if (userScrolled) {
-        setShowGoDownButton(true);
-      }
+      if (userScrolled) setShowGoDownButton(true);
     } else if (isAtBottom) {
       setShowGoDownButton(false);
       setUserScrolled(false);
@@ -299,24 +211,184 @@ function Chat() {
     setProfileMenuOpen(!profileMenuOpen);
   };
 
+  const fetchHistory = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/history`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) return;
+      const data = await response.json();
+      setChatHistory(data.history || []);
+    } catch (err) {
+      console.error('Error fetching history:', err);
+    }
+  }, [navigate]);
+
+  const handleHistoryClick = (e) => {
+    e.preventDefault();
+    fetchHistory();
+    openModal('History');
+    setProfileMenuOpen(false);
+  };
+
+  const handleNewChatClick = (e) => {
+    e.preventDefault();
+    setChatId(null);
+    setMessages([]);
+    navigate('/chat');
+    setProfileMenuOpen(false);
+  };
+
+  const handleLogoutClick = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        await fetch(`${API_BASE_URL}/logout`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        console.error('Error during logout:', error);
+      }
+      localStorage.removeItem('token');
+      navigate('/login');
+    } else {
+      localStorage.removeItem('token');
+      navigate('/login');
+    }
+    setProfileMenuOpen(false);
+  };
+
+  const loadSelectedHistory = (selectedChatId) => {
+    setModalOpen(false);
+    setMessages([]);
+    setChatId(selectedChatId);
+    navigate(`/chat?id=${selectedChatId}`);
+  };
+
+  const loadChatMessages = useCallback(
+    async (id) => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/chats/${id}/messages`,
+          {
+            method: 'GET',
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (response.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+          return;
+        }
+
+        if (!response.ok) throw new Error('Failed to fetch chat messages');
+
+        const data = await response.json();
+        const loadedMessages = data.messages
+          .map((m) => {
+            if (m.user_message) {
+              return { content: m.user_message, isUser: true };
+            } else if (m.bot_message) {
+              return { content: m.bot_message, isUser: false };
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        setChatId(id);
+        setMessages(loadedMessages);
+      } catch (err) {
+        console.error('Error fetching chat messages:', err);
+      }
+    },
+    [navigate]
+  );
+
+  const sendWelcomeMessage = useCallback(() => {
+    setMessages([
+      {
+        content: 'Hello! Welcome to AskNAU. How can I assist you today?',
+        isUser: false,
+      },
+    ]);
+  }, []);
+
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target) &&
+        event.target.nodeName !== 'IMG'
+      ) {
+        setProfileMenuOpen(false);
+      }
+    };
+    if (profileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [profileMenuOpen]);
+
+  // Fetch user profile on component mount
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
+  // Load chat messages when urlChatId changes
+  useEffect(() => {
+    if (urlChatId) {
+      setMessages([]);
+      loadChatMessages(urlChatId);
+    } else {
+      setChatId(null);
+      sendWelcomeMessage();
+    }
+  }, [urlChatId, loadChatMessages, sendWelcomeMessage]);
+
+  // Scroll to bottom when messages change, unless user scrolled up
+  useEffect(() => {
+    if (!userScrolled) scrollToBottom();
+  }, [messages, userScrolled, scrollToBottom]);
+
   return (
     <div className="app-container text-gray-300 flex items-center justify-center h-full">
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
         {/* Chat Header */}
         <div className="chat-header p-4 flex items-center justify-between">
           <div className="flex items-center">
-            <span className="text-2xl font-bold">
-              
-              AskNAU
-              </span>
+            <span className="text-2xl font-bold">AskNAU</span>
             <span
               style={{ color: 'rgba(6,147,227,1)' }}
-              className="text-x font-normal ml-2"
+              className="text-xs font-normal ml-2"
             >
               (North American University AI)
             </span>
           </div>
-          {/* Profile Picture and Menu */}
           <div className="relative">
             <img
               src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
@@ -324,48 +396,68 @@ function Chat() {
               className="w-8 h-8 rounded-full cursor-pointer"
               onClick={toggleProfileMenu}
             />
-            
             {profileMenuOpen && (
               <div
                 id="profile-menu"
                 ref={profileMenuRef}
-                className="absolute right-0 mt-2 w-48 rounded-md shadow-lg"
+                className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-700"
               >
                 <button
-                  className="block px-4 py-2  text-left w-full arkasy"
+                  className="block px-4 py-2 text-left w-full arkasy"
                   onClick={(e) => {
                     e.preventDefault();
                     openModal('Profile');
                     setProfileMenuOpen(false);
                   }}
                 >
-                  <FontAwesomeIcon icon={faUser} style={{ marginRight: '10px' }} />
-
+                  <FontAwesomeIcon
+                    icon={faUser}
+                    style={{ marginRight: '10px' }}
+                  />
                   Profile
                 </button>
                 <button
-                  className="block px-4 py-2  text-left w-full arkasy"
+                  className="block px-4 py-2 text-left w-full arkasy"
+                  onClick={handleNewChatClick}
+                >
+                  <FontAwesomeIcon
+                    icon={faPlus}
+                    style={{ marginRight: '10px' }}
+                  />
+                  New Chat
+                </button>
+                <button
+                  className="block px-4 py-2 text-left w-full arkasy"
+                  onClick={handleHistoryClick}
+                >
+                  <FontAwesomeIcon
+                    icon={faClockRotateLeft}
+                    style={{ marginRight: '10px' }}
+                  />
+                  History
+                </button>
+                <button
+                  className="block px-4 py-2 text-left w-full arkasy"
                   onClick={(e) => {
                     e.preventDefault();
-                    navigate('/demo'); // Redirect to Demo page
+                    navigate('/demo');
                     setProfileMenuOpen(false);
                   }}
                 >
-                  <FontAwesomeIcon icon={faPlay} style={{ marginRight: '10px' }} />
+                  <FontAwesomeIcon
+                    icon={faPlay}
+                    style={{ marginRight: '10px' }}
+                  />
                   Demo
                 </button>
                 <button
-                  className="block px-4 py-2  text-left w-full arkasy"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // Handle logout
-                    localStorage.removeItem('token');
-                    navigate('/login');
-                    setProfileMenuOpen(false);
-                  }}
+                  className="block px-4 py-2 text-left w-full arkasy"
+                  onClick={handleLogoutClick}
                 >
-                  <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: '10px' }}/>
-
+                  <FontAwesomeIcon
+                    icon={faRightFromBracket}
+                    style={{ marginRight: '10px' }}
+                  />
                   Logout
                 </button>
               </div>
@@ -396,7 +488,15 @@ function Chat() {
               )}
             </div>
           ))}
+          {botTyping && (
+            <div className="message bot-message">
+              <div className="message-wrapper">
+                <div className="message-content">Typing...</div>
+              </div>
+            </div>
+          )}
         </div>
+
         {/* Chat Footer */}
         <div className="chat-footer p-4 flex flex-col items-center space-y-2">
           {errorMessage && (
@@ -430,7 +530,6 @@ function Chat() {
               onClick={() => sendMessage()}
               className="p-2 bg-blue-600 rounded-r-md"
             >
-              {/* Arrow SVG */}
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -446,11 +545,10 @@ function Chat() {
               </svg>
             </button>
           </div>
-
-          {/* Disclaimer */}
           <div className="disclaimer">@ AskNAU - 2024</div>
         </div>
-        {/* Scroll to Bottom Button */}
+
+        {/* Go Down Button */}
         {showGoDownButton && (
           <button className="go-down-button" onClick={scrollToBottom}>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -468,20 +566,43 @@ function Chat() {
       {modalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal-title font-bold">{modalContent}</h2>
-            {/* Content based on modalContent */}
+            <h2 className="modal-title font-bold">
+              {modalContent === 'Profile' ? 'Profile' : 'History'}
+            </h2>
             {modalContent === 'Profile' && (
-              <div className="space-y-4">
+              <div className="space-y-4 modal-content">
                 <p>
                   <span className="font-semibold">Name:</span> {userName}
                 </p>
                 <p>
                   <span className="font-semibold">Email:</span> {userEmail}
                 </p>
+                <div className="disclaimer">
+                  For profile questions, contact zkalykov@na.edu
+                </div>
               </div>
             )}
-
-            {/* Remove the 'More' modal content since we now redirect to Demo */}
+            {modalContent === 'History' && (
+              <div className="space-y-4 modal-content">
+                {chatHistory && chatHistory.length > 0 ? (
+                  chatHistory.map((h, idx) => (
+                    <div
+                      key={idx}
+                      className="arkasy p-2 rounded cursor-pointer history-item"
+                      onClick={() => loadSelectedHistory(h.chat_id)}
+                    >
+                      {h.history_title}
+                      {h.title ? ` - ${h.title}` : ''} -{' '}
+                      {h.date_created
+                        ? new Date(h.date_created).toLocaleString()
+                        : ''}
+                    </div>
+                  ))
+                ) : (
+                  <div>No history found.</div>
+                )}
+              </div>
+            )}
             <button onClick={closeModal} className="modal-close-button">
               Close
             </button>

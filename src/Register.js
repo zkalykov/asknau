@@ -29,7 +29,7 @@ function Register() {
         password: signUpPassword,
       });
 
-      const response = await fetch('https://asknau-backend-20d79e207a54.herokuapp.com/register', {
+      const response = await fetch('http://127.0.0.1:5000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
