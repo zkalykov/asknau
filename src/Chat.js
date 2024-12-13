@@ -68,7 +68,7 @@ function Chat() {
   const profileMenuRef = useRef(null);
   const [urlChatId, setUrlChatId] = useState(null);
 
-  const API_BASE_URL = 'https://asknau-backend-20d79e207a54.herokuapp.com';
+  const API_BASE_URL = 'http://127.0.0.1:5000';
 
   // Parse chat ID from URL
   useEffect(() => {
@@ -156,6 +156,8 @@ function Chat() {
     setBotTyping(true);
 
     try {
+      console.log('Sending message:', { question: msg, chat_id: chatId });
+      console.log('Using token:', token);
       const response = await fetch(`${API_BASE_URL}/ask`, {
         method: 'POST',
         headers: {
@@ -175,13 +177,13 @@ function Chat() {
 
       const data = await response.json();
       if (data.error) {
-        appendMessage(`Error: ${data.error}`, false);
+        appendMessage(`Error here: ${data.error}`, false);
       } else {
         setChatId(data.chat_id);
         appendMessage(data.answer, false);
       }
     } catch (error) {
-      appendMessage(`Error: ${error.message}`, false);
+      appendMessage(`Error here 2: ${error.message}`, false);
     } finally {
       setBotTyping(false);
     }
@@ -306,16 +308,16 @@ function Chat() {
         if (!response.ok) throw new Error('Failed to fetch chat messages');
 
         const data = await response.json();
-        const loadedMessages = data.messages
-          .map((m) => {
-            if (m.user_message) {
-              return { content: m.user_message, isUser: true };
-            } else if (m.bot_message) {
-              return { content: m.bot_message, isUser: false };
-            }
-            return null;
-          })
-          .filter(Boolean);
+        const loadedMessages = data.messages.flatMap((m) => {
+          const msgs = [];
+          if (m.user_message) {
+            msgs.push({ content: m.user_message, isUser: true });
+          }
+          if (m.bot_message) {
+            msgs.push({ content: m.bot_message, isUser: false });
+          }
+          return msgs;
+        });
 
         setChatId(id);
         setMessages(loadedMessages);
