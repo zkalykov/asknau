@@ -9,6 +9,8 @@ import {
   faRightFromBracket,
   faClockRotateLeft,
   faPlus,
+  faPaperclip,
+  faAngleRight,
 } from '@fortawesome/free-solid-svg-icons';
 
 function CopyButton({ text }) {
@@ -193,9 +195,8 @@ function Chat() {
     const chatBody = chatBodyRef.current;
     const currentScrollTop = chatBody.scrollTop;
     const isAtBottom =
-      Math.abs(
-        chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight
-      ) < 1;
+      Math.abs(chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight) <
+      1;
 
     if (currentScrollTop > lastScrollTop.current && !isAtBottom) {
       if (userScrolled) setShowGoDownButton(true);
@@ -291,13 +292,10 @@ function Chat() {
       }
 
       try {
-        const response = await fetch(
-          `${API_BASE_URL}/chats/${id}/messages`,
-          {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/chats/${id}/messages`, {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         if (response.status === 401) {
           localStorage.removeItem('token');
@@ -336,6 +334,12 @@ function Chat() {
       },
     ]);
   }, []);
+
+  // Handle Attachment Button Click
+  const handleAttachmentClick = (e) => {
+    e.preventDefault();
+    openModal('Attachment');
+  };
 
   // Close profile menu when clicking outside
   useEffect(() => {
@@ -386,7 +390,7 @@ function Chat() {
             <span className="text-2xl font-bold">AskNAU</span>
             <span
               style={{ color: 'rgba(6,147,227,1)' }}
-              className="text-xs font-normal ml-2"
+              className="text-xl font-normal ml-2"
             >
               (North American University AI)
             </span>
@@ -398,6 +402,7 @@ function Chat() {
               className="w-8 h-8 rounded-full cursor-pointer"
               onClick={toggleProfileMenu}
             />
+
             {profileMenuOpen && (
               <div
                 id="profile-menu"
@@ -412,20 +417,14 @@ function Chat() {
                     setProfileMenuOpen(false);
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    style={{ marginRight: '10px' }}
-                  />
+                  <FontAwesomeIcon icon={faUser} style={{ marginRight: '10px' }} />
                   Profile
                 </button>
                 <button
                   className="block px-4 py-2 text-left w-full arkasy"
                   onClick={handleNewChatClick}
                 >
-                  <FontAwesomeIcon
-                    icon={faPlus}
-                    style={{ marginRight: '10px' }}
-                  />
+                  <FontAwesomeIcon icon={faPlus} style={{ marginRight: '10px' }} />
                   New Chat
                 </button>
                 <button
@@ -446,10 +445,7 @@ function Chat() {
                     setProfileMenuOpen(false);
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={faPlay}
-                    style={{ marginRight: '10px' }}
-                  />
+                  <FontAwesomeIcon icon={faPlay} style={{ marginRight: '10px' }} />
                   Demo
                 </button>
                 <button
@@ -476,9 +472,7 @@ function Chat() {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`message ${
-                message.isUser ? 'user-message' : 'bot-message'
-              }`}
+              className={`message ${message.isUser ? 'user-message' : 'bot-message'}`}
             >
               {message.isUser ? (
                 message.content
@@ -493,7 +487,7 @@ function Chat() {
           {botTyping && (
             <div className="message bot-message">
               <div className="message-wrapper">
-                <div className="message-content">Typing...</div>
+                <div className="message-content">Thinking...</div>
               </div>
             </div>
           )}
@@ -502,11 +496,16 @@ function Chat() {
         {/* Chat Footer */}
         <div className="chat-footer p-4 flex flex-col items-center space-y-2">
           {errorMessage && (
-            <div className="error-message text-red-600 text-sm">
-              {errorMessage}
-            </div>
+            <div className="error-message text-red-600 text-sm">{errorMessage}</div>
           )}
           <div className="input-container flex-1 w-full flex items-center">
+            <button
+              onClick={handleAttachmentClick}
+              className="p-2 bg-blue-600 rounded-l-md"
+            >
+              <FontAwesomeIcon icon={faPaperclip} className="text-white" />
+            </button>
+            
             <input
               type="text"
               value={inputValue}
@@ -526,25 +525,14 @@ function Chat() {
               }}
               placeholder="Message AskNAU..."
               autoComplete="off"
-              className="flex-grow p-2 rounded-l-md bg-gray-800 text-white"
+              className="flex-grow p-2 bg-gray-800 text-white rounded-l-full"
             />
+            
             <button
               onClick={() => sendMessage()}
               className="p-2 bg-blue-600 rounded-r-md"
             >
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 5l7 7-7 7"
-                ></path>
-              </svg>
+              <FontAwesomeIcon icon={faAngleRight} className="text-white" />
             </button>
           </div>
           <div className="disclaimer">@ AskNAU - 2024</div>
@@ -554,12 +542,7 @@ function Chat() {
         {showGoDownButton && (
           <button className="go-down-button" onClick={scrollToBottom}>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              ></path>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
             </svg>
           </button>
         )}
@@ -569,7 +552,7 @@ function Chat() {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title font-bold">
-              {modalContent === 'Profile' ? 'Profile' : 'History'}
+              {modalContent === 'Profile' ? 'Profile' : modalContent === 'History' ? 'History' : 'Attachment'}
             </h2>
             {modalContent === 'Profile' && (
               <div className="space-y-4 modal-content">
@@ -603,6 +586,18 @@ function Chat() {
                 ) : (
                   <div>No history found.</div>
                 )}
+              </div>
+            )}
+            {modalContent === 'Attachment' && (
+              <div className="space-y-4 modal-content">
+                <h1>This is used only for reading TRANSCRIPT !<br></br>As you see on an example, please upload right transcript.<br></br>This will be used to give information to ASKNAU ai about your grade, major and more.</h1>
+                <img src="https://i.imgur.com/JcNsvaX.png" alt="Transcript" className="attachment-image" />
+                
+                {/* File input for uploading transcript */}
+                <input type="file" id="fileInput" accept=".pdf"  />
+                <button>Send Transcript</button>
+
+                
               </div>
             )}
             <button onClick={closeModal} className="modal-close-button">

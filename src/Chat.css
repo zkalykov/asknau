@@ -84,18 +84,25 @@ body {
 
 .input-container button {
   background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 50%;
-  background-color: #0e0e0e;
+  border: none;              /* No border for a cleaner look */
+  color: #fff;               /* White color for the icon */
+  cursor: pointer;           /* Cursor indicates clickable items */
+  padding: 10px;             /* Adequate padding to form a circular shape */
+  border-radius: 50%;        /* Rounded border to make it perfectly circular */
+  display: flex;             /* Flex layout to center the icon */
+  align-items: center;       /* Center the icon vertically */
+  justify-content: center;   /* Center the icon horizontally */
+  width: 40px;               /* Fixed width for circle shape */
+  height: 40px;              /* Fixed height for circle shape */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
 }
 
 .input-container button:hover {
   background-color: #333;
   color: rgba(6, 147, 227, 1);
 }
+
+
 
 .go-down-button {
   position: fixed;
@@ -284,4 +291,9 @@ body {
   to {
     transform: translateY(0);
   }
+}
+
+
+#fileInput {
+  padding: 20px;
 }
