@@ -68,7 +68,7 @@ function Chat() {
   const profileMenuRef = useRef(null);
   const [urlChatId, setUrlChatId] = useState(null);
 
-  const API_BASE_URL = 'http://127.0.0.1:5000';
+  const API_BASE_URL = 'https://asknau-backend-20d79e207a54.herokuapp.com';
 
   // Parse chat ID from URL
   useEffect(() => {
