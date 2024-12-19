@@ -390,7 +390,7 @@ function Chat() {
             <span className="text-2xl font-bold">AskNAU</span>
             <span
               style={{ color: 'rgba(6,147,227,1)' }}
-              className="text-xl font-normal ml-2"
+              className="text-x font-normal ml-2"
             >
               (North American University AI)
             </span>
@@ -499,12 +499,12 @@ function Chat() {
             <div className="error-message text-red-600 text-sm">{errorMessage}</div>
           )}
           <div className="input-container flex-1 w-full flex items-center">
-            <button
+            <a
               onClick={handleAttachmentClick}
-              className="p-2 bg-blue-600 rounded-l-md"
+              className="attachment-button"
             >
               <FontAwesomeIcon icon={faPaperclip} className="text-white" />
-            </button>
+            </a>
             
             <input
               type="text"

@@ -102,7 +102,18 @@ body {
   color: rgba(6, 147, 227, 1);
 }
 
-
+.attachment-button{
+  background: none;
+  border: none;              /* No border for a cleaner look */
+  color: #fff;               /* White color for the icon */
+  cursor: pointer;           /* Cursor indicates clickable items */
+  display: flex;             /* Flex layout to center the icon */
+  align-items: center;       /* Center the icon vertically */
+  padding-left: 10px;
+  width: 40px;               /* Fixed width for circle shape */
+  height: 40px;              /* Fixed height for circle shape */
+  
+}
 
 .go-down-button {
   position: fixed;
@@ -228,6 +239,7 @@ body {
   align-items: center;
   z-index: 1000;
   animation: modalFadeIn 0.3s ease-out;
+
 }
 
 .modal-box {
@@ -250,6 +262,7 @@ body {
 .modal-content {
   max-height: 400px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .modal-content::-webkit-scrollbar {
