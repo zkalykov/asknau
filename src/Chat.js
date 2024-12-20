@@ -49,7 +49,7 @@ function CopyButton({ text }) {
 export default function Chat() {
   const navigate = useNavigate();
   const location = useLocation();
-  const API_BASE_URL = 'http://127.0.0.1:5000';
+  const API_BASE_URL = 'https://asknau-backend-20d79e207a54.herokuapp.com';
 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
