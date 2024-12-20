@@ -81,6 +81,10 @@ body {
   color: #aaa;
   font-style: normal;
 }
+.transcript-message {
+  font-style: italic;
+  color: #bcbcbc; /* darker color */
+}
 
 .input-container button {
   background: none;
@@ -112,9 +116,11 @@ body {
   padding-left: 10px;
   width: 40px;               /* Fixed width for circle shape */
   height: 40px;              /* Fixed height for circle shape */
-  
+  transition: transform 0.3s ease;
 }
-
+.attachment-button:hover {
+  transform: scale(1.3);
+}
 .go-down-button {
   position: fixed;
   bottom: 120px;

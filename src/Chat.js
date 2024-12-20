@@ -1,4 +1,5 @@
-// Chat.js
+// src Chat.js
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Chat.css';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -15,17 +16,15 @@ import {
 
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
-
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 1000);
-    } catch (error) {
+    } catch {
       alert('Failed to copy text.');
     }
   };
-
   return (
     <button
       className="copy-button"
@@ -47,9 +46,10 @@ function CopyButton({ text }) {
   );
 }
 
-function Chat() {
+export default function Chat() {
   const navigate = useNavigate();
   const location = useLocation();
+  const API_BASE_URL = 'http://127.0.0.1:5000';
 
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
@@ -64,15 +64,14 @@ function Chat() {
   const [userEmail, setUserEmail] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [chatId, setChatId] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  const lastScrollTop = useRef(0);
   const chatBodyRef = useRef(null);
   const profileMenuRef = useRef(null);
+  const lastScrollTop = useRef(0);
+
   const [urlChatId, setUrlChatId] = useState(null);
 
-  const API_BASE_URL = 'https://asknau-backend-20d79e207a54.herokuapp.com/';
-
-  // Parse chat ID from URL
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const newChatId = queryParams.get('id');
@@ -81,60 +80,39 @@ function Chat() {
 
   const scrollToBottom = useCallback(() => {
     if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTo({
-        top: chatBodyRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
+      chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: 'smooth' });
       setUserScrolled(false);
     }
   }, []);
 
-  const openModal = (content) => {
-    setModalContent(content);
-    setModalOpen(true);
-  };
+  
 
-  const closeModal = () => {
-    setModalOpen(false);
-    setModalContent('');
-  };
-
-  // Fetch user profile function
   const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
     }
-
     try {
       const response = await fetch(`${API_BASE_URL}/profile`, {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.status === 401) {
         localStorage.removeItem('token');
         navigate('/login');
         return;
       }
-
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.statusText}`);
-      }
-
+      if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
       const data = await response.json();
       setUserName(data.full_name);
       setUserEmail(data.email);
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-    }
-  }, [navigate]);
+    } catch {}
+  }, [navigate, API_BASE_URL]);
 
-  const appendMessage = (content, isUser = true) => {
-    setMessages((prev) => [...prev, { content, isUser }]);
+  const appendMessage = (content, isUser = true, user_message_type = 'text') => {
+    const stringContent = typeof content === 'object' ? JSON.stringify(content) : content;
+    setMessages((prev) => [...prev, { content: stringContent, isUser, user_message_type }]);
   };
 
   const sendMessage = async () => {
@@ -146,46 +124,41 @@ function Chat() {
       return;
     }
     setErrorMessage('');
-    appendMessage(msg, true);
+    appendMessage(msg, true, 'text');
     setInputValue('');
-
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
     }
-
     setBotTyping(true);
-
+    const payload = { question: msg, chat_id: chatId, user_message_type: 'text' };
     try {
-      console.log('Sending message:', { question: msg, chat_id: chatId });
-      console.log('Using token:', token);
       const response = await fetch(`${API_BASE_URL}/ask`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ question: msg, chat_id: chatId }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload),
       });
-
       if (response.status === 401) {
         localStorage.removeItem('token');
         navigate('/login');
         return;
       }
-
       if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
-
       const data = await response.json();
       if (data.error) {
-        appendMessage(`Error here: ${data.error}`, false);
+        appendMessage(`Error here: ${data.error}`, false, 'text');
       } else {
-        setChatId(data.chat_id);
-        appendMessage(data.answer, false);
+        if (!chatId && data.chat_id) {
+          setChatId(data.chat_id);
+          navigate(`/chat?id=${data.chat_id}`);
+        } else {
+          setChatId(data.chat_id);
+        }
+        appendMessage(data.answer, false, 'text');
       }
     } catch (error) {
-      appendMessage(`Error here 2: ${error.message}`, false);
+      appendMessage(`Error here 2: ${error.message}`, false, 'text');
     } finally {
       setBotTyping(false);
     }
@@ -194,10 +167,7 @@ function Chat() {
   const handleChatBodyScroll = () => {
     const chatBody = chatBodyRef.current;
     const currentScrollTop = chatBody.scrollTop;
-    const isAtBottom =
-      Math.abs(chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight) <
-      1;
-
+    const isAtBottom = Math.abs(chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight) < 1;
     if (currentScrollTop > lastScrollTop.current && !isAtBottom) {
       if (userScrolled) setShowGoDownButton(true);
     } else if (isAtBottom) {
@@ -214,13 +184,23 @@ function Chat() {
     setProfileMenuOpen(!profileMenuOpen);
   };
 
+  const openModal = (content) => {
+    setModalContent(content);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalContent('');
+    setSelectedFile(null);
+  };
+
   const fetchHistory = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
     }
-
     try {
       const response = await fetch(`${API_BASE_URL}/history`, {
         method: 'GET',
@@ -231,14 +211,11 @@ function Chat() {
         navigate('/login');
         return;
       }
-
       if (!response.ok) return;
       const data = await response.json();
       setChatHistory(data.history || []);
-    } catch (err) {
-      console.error('Error fetching history:', err);
-    }
-  }, [navigate]);
+    } catch {}
+  }, [navigate, API_BASE_URL]);
 
   const handleHistoryClick = (e) => {
     e.preventDefault();
@@ -264,9 +241,7 @@ function Chat() {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         });
-      } catch (error) {
-        console.error('Error during logout:', error);
-      }
+      } catch {}
       localStorage.removeItem('token');
       navigate('/login');
     } else {
@@ -276,13 +251,7 @@ function Chat() {
     setProfileMenuOpen(false);
   };
 
-  const loadSelectedHistory = (selectedChatId) => {
-    setModalOpen(false);
-    setMessages([]);
-    setChatId(selectedChatId);
-    navigate(`/chat?id=${selectedChatId}`);
-  };
-
+  // Reintroduce loadChatMessages for history selection
   const loadChatMessages = useCallback(
     async (id) => {
       const token = localStorage.getItem('token');
@@ -290,108 +259,146 @@ function Chat() {
         navigate('/login');
         return;
       }
-
+      
       try {
         const response = await fetch(`${API_BASE_URL}/chats/${id}/messages`, {
           method: 'GET',
           headers: { Authorization: `Bearer ${token}` },
         });
-
         if (response.status === 401) {
           localStorage.removeItem('token');
           navigate('/login');
           return;
         }
-
         if (!response.ok) throw new Error('Failed to fetch chat messages');
-
         const data = await response.json();
         const loadedMessages = data.messages.flatMap((m) => {
           const msgs = [];
           if (m.user_message) {
-            msgs.push({ content: m.user_message, isUser: true });
+            let displayContent = m.user_message_type === 'transcript' ? 'transcript sent' : m.user_message;
+            msgs.push({ content: displayContent, isUser: true, user_message_type: m.user_message_type || 'text' });
           }
           if (m.bot_message) {
-            msgs.push({ content: m.bot_message, isUser: false });
+            msgs.push({ content: m.bot_message, isUser: false, user_message_type: m.user_message_type || 'text' });
           }
           return msgs;
         });
-
         setChatId(id);
         setMessages(loadedMessages);
-      } catch (err) {
-        console.error('Error fetching chat messages:', err);
-      }
+      } catch {}
     },
-    [navigate]
+    [navigate, API_BASE_URL]
   );
 
-  const sendWelcomeMessage = useCallback(() => {
-    setMessages([
-      {
-        content: 'Hello! Welcome to AskNAU. How can I assist you today?',
-        isUser: false,
-      },
-    ]);
-  }, []);
+  const loadSelectedHistory = (selectedChatId) => {
+    setModalOpen(false);
+    setMessages([]);
+    setChatId(selectedChatId);
+    navigate(`/chat?id=${selectedChatId}`);
+    // Load the messages for the selected history chat
+    loadChatMessages(selectedChatId);
+  };
 
-  // Handle Attachment Button Click
   const handleAttachmentClick = (e) => {
     e.preventDefault();
     openModal('Attachment');
   };
 
-  // Close profile menu when clicking outside
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setSelectedFile(file);
+  };
+
+  const handleSendTranscript = async () => {
+    if (!selectedFile) return;
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    if (chatId) formData.append('chat_id', chatId);
+    try {
+      const response = await fetch(`${API_BASE_URL}/attachment-transcript`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+      if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+      const data = await response.json();
+      if (!chatId && data.chat_id) {
+        setChatId(data.chat_id);
+        navigate(`/chat?id=${data.chat_id}`);
+      }
+      closeModal();
+      appendMessage('transcript sent', true, 'transcript');
+      setBotTyping(true);
+      const payload = { question: 'transcript sent', chat_id: chatId || data.chat_id, user_message_type: 'transcript' };
+      try {
+        const resp = await fetch(`${API_BASE_URL}/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(payload),
+        });
+        if (resp.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+          return;
+        }
+        if (!resp.ok) throw new Error(`Server error: ${resp.statusText}`);
+        const respData = await resp.json();
+        if (respData.error) {
+          appendMessage(`Error here: ${respData.error}`, false, 'text');
+        } else {
+          setChatId(respData.chat_id);
+          appendMessage(respData.answer, false, 'text');
+        }
+      } catch (error) {
+        appendMessage(`Error here 2: ${error.message}`, false, 'text');
+      } finally {
+        setBotTyping(false);
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target) &&
-        event.target.nodeName !== 'IMG'
-      ) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target) && event.target.nodeName !== 'IMG') {
         setProfileMenuOpen(false);
       }
     };
     if (profileMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [profileMenuOpen]);
 
-  // Fetch user profile on component mount
   useEffect(() => {
     fetchUserProfile();
   }, [fetchUserProfile]);
 
-  // Load chat messages when urlChatId changes
-  useEffect(() => {
-    if (urlChatId) {
-      setMessages([]);
-      loadChatMessages(urlChatId);
-    } else {
-      setChatId(null);
-      sendWelcomeMessage();
-    }
-  }, [urlChatId, loadChatMessages, sendWelcomeMessage]);
+  // Removed the automatic loading on URL chat ID change, to preserve array-list style for new chats
 
-  // Scroll to bottom when messages change, unless user scrolled up
   useEffect(() => {
     if (!userScrolled) scrollToBottom();
   }, [messages, userScrolled, scrollToBottom]);
 
+  const noChatSelected = !chatId && messages.length === 0;
+
+  
   return (
     <div className="app-container text-gray-300 flex items-center justify-center h-full">
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
-        {/* Chat Header */}
         <div className="chat-header p-4 flex items-center justify-between">
           <div className="flex items-center">
             <span className="text-2xl font-bold">AskNAU</span>
-            <span
-              style={{ color: 'rgba(6,147,227,1)' }}
-              className="text-x font-normal ml-2"
-            >
+            <span style={{ color: 'rgba(6,147,227,1)' }} className="text-x font-normal ml-2">
               (North American University AI)
             </span>
           </div>
@@ -402,7 +409,6 @@ function Chat() {
               className="w-8 h-8 rounded-full cursor-pointer"
               onClick={toggleProfileMenu}
             />
-
             {profileMenuOpen && (
               <div
                 id="profile-menu"
@@ -420,21 +426,12 @@ function Chat() {
                   <FontAwesomeIcon icon={faUser} style={{ marginRight: '10px' }} />
                   Profile
                 </button>
-                <button
-                  className="block px-4 py-2 text-left w-full arkasy"
-                  onClick={handleNewChatClick}
-                >
+                <button className="block px-4 py-2 text-left w-full arkasy" onClick={handleNewChatClick}>
                   <FontAwesomeIcon icon={faPlus} style={{ marginRight: '10px' }} />
                   New Chat
                 </button>
-                <button
-                  className="block px-4 py-2 text-left w-full arkasy"
-                  onClick={handleHistoryClick}
-                >
-                  <FontAwesomeIcon
-                    icon={faClockRotateLeft}
-                    style={{ marginRight: '10px' }}
-                  />
+                <button className="block px-4 py-2 text-left w-full arkasy" onClick={handleHistoryClick}>
+                  <FontAwesomeIcon icon={faClockRotateLeft} style={{ marginRight: '10px' }} />
                   History
                 </button>
                 <button
@@ -448,14 +445,8 @@ function Chat() {
                   <FontAwesomeIcon icon={faPlay} style={{ marginRight: '10px' }} />
                   Demo
                 </button>
-                <button
-                  className="block px-4 py-2 text-left w-full arkasy"
-                  onClick={handleLogoutClick}
-                >
-                  <FontAwesomeIcon
-                    icon={faRightFromBracket}
-                    style={{ marginRight: '10px' }}
-                  />
+                <button className="block px-4 py-2 text-left w-full arkasy" onClick={handleLogoutClick}>
+                  <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: '10px' }} />
                   Logout
                 </button>
               </div>
@@ -463,49 +454,45 @@ function Chat() {
           </div>
         </div>
 
-        {/* Chat Body */}
-        <div
-          className="chat-body flex flex-col p-4 space-y-4 overflow-y-auto"
-          ref={chatBodyRef}
-          onScroll={handleChatBodyScroll}
-        >
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`message ${message.isUser ? 'user-message' : 'bot-message'}`}
-            >
-              {message.isUser ? (
-                message.content
-              ) : (
-                <div className="message-wrapper">
-                  <div className="message-content">{message.content}</div>
-                  <CopyButton text={message.content} />
-                </div>
-              )}
+        <div className="chat-body flex flex-col p-4 space-y-4 overflow-y-auto" ref={chatBodyRef} onScroll={handleChatBodyScroll}>
+          {noChatSelected && (
+            <div className="flex items-center justify-center h-full text-3xl opacity-80">
+              Say Hello to AskNAU !
             </div>
-          ))}
+          )}
+
+          {!noChatSelected &&
+            messages.map((message, index) => (
+              <div key={index} className={`message ${message.isUser ? 'user-message' : 'bot-message'}`}>
+                {message.isUser ? (
+                  message.user_message_type === 'transcript' ? (
+                    <span className="transcript-message">transcript sent</span>
+                  ) : (
+                    message.content
+                  )
+                ) : (
+                  <div className="message-wrapper">
+                    <div className="message-content">{message.content}</div>
+                    <CopyButton text={message.content} />
+                  </div>
+                )}
+              </div>
+            ))}
           {botTyping && (
             <div className="message bot-message">
               <div className="message-wrapper">
-                <div className="message-content">Thinking...</div>
+                <div className="message-content">...</div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Chat Footer */}
         <div className="chat-footer p-4 flex flex-col items-center space-y-2">
-          {errorMessage && (
-            <div className="error-message text-red-600 text-sm">{errorMessage}</div>
-          )}
+          {errorMessage && <div className="error-message text-red-600 text-sm">{errorMessage}</div>}
           <div className="input-container flex-1 w-full flex items-center">
-            <a
-              onClick={handleAttachmentClick}
-              className="attachment-button"
-            >
+            <a onClick={handleAttachmentClick} className="attachment-button">
               <FontAwesomeIcon icon={faPaperclip} className="text-white" />
             </a>
-            
             <input
               type="text"
               value={inputValue}
@@ -527,18 +514,13 @@ function Chat() {
               autoComplete="off"
               className="flex-grow p-2 bg-gray-800 text-white rounded-l-full"
             />
-            
-            <button
-              onClick={() => sendMessage()}
-              className="p-2 bg-blue-600 rounded-r-md"
-            >
+            <button onClick={sendMessage} className="p-2 bg-blue-600 rounded-r-md">
               <FontAwesomeIcon icon={faAngleRight} className="text-white" />
             </button>
           </div>
           <div className="disclaimer">@ AskNAU - 2024</div>
         </div>
 
-        {/* Go Down Button */}
         {showGoDownButton && (
           <button className="go-down-button" onClick={scrollToBottom}>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -547,13 +529,14 @@ function Chat() {
           </button>
         )}
       </div>
-      {/* Modal */}
+
       {modalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title font-bold">
               {modalContent === 'Profile' ? 'Profile' : modalContent === 'History' ? 'History' : 'Attachment'}
             </h2>
+
             {modalContent === 'Profile' && (
               <div className="space-y-4 modal-content">
                 <p>
@@ -562,11 +545,10 @@ function Chat() {
                 <p>
                   <span className="font-semibold">Email:</span> {userEmail}
                 </p>
-                <div className="disclaimer">
-                  For profile questions, contact zkalykov@na.edu
-                </div>
+                <div className="disclaimer">For profile questions, contact zkalykov@na.edu</div>
               </div>
             )}
+
             {modalContent === 'History' && (
               <div className="space-y-4 modal-content">
                 {chatHistory && chatHistory.length > 0 ? (
@@ -577,10 +559,7 @@ function Chat() {
                       onClick={() => loadSelectedHistory(h.chat_id)}
                     >
                       {h.history_title}
-                      {h.title ? ` - ${h.title}` : ''} -{' '}
-                      {h.date_created
-                        ? new Date(h.date_created).toLocaleString()
-                        : ''}
+                      {h.title ? ` - ${h.title}` : ''} - {h.date_created ? new Date(h.date_created).toLocaleString() : ''}
                     </div>
                   ))
                 ) : (
@@ -588,26 +567,45 @@ function Chat() {
                 )}
               </div>
             )}
-            {modalContent === 'Attachment' && (
-              <div className="space-y-4 modal-content">
-                <h1>This is used only for reading TRANSCRIPT !<br></br>As you see on an example, please upload right transcript.<br></br>This will be used to give information to ASKNAU ai about your grade, major and more.</h1>
-                <img src="https://i.imgur.com/JcNsvaX.png" alt="Transcript" className="attachment-image" />
-                
-                {/* File input for uploading transcript */}
-                <input type="file" id="fileInput" accept=".pdf"  />
-                <button>Send Transcript</button>
 
-                
+            {modalContent === 'Attachment' && (
+              <div className="modal-content space-y-6 p-6 bg-[#4b4b4b] text-[#fff] rounded-lg shadow-lg">
+                <h1 className="text-xl font-semibold text-center">Upload Transcript for ASKNAU AI</h1>
+                <p className="text-sm text-[#fff] text-center">
+                  Please upload the correct transcript as shown in the example. This will help ASKNAU AI process
+                  information about your grades, major, and more.
+                </p>
+                <div className="flex justify-center">
+                  <img src="https://i.imgur.com/JcNsvaX.png" alt="Transcript Example" className="rounded-lg shadow-md max-w-full" />
+                </div>
+                <div className="flex flex-col items-center space-y-4">
+                  <label
+                    htmlFor="fileInput"
+                    className="block text-center text-[#fff] border border-[#fff] rounded-lg p-2 cursor-pointer hover:bg-[#4b4b4b] transition"
+                  >
+                    Select a Transcript File
+                    <input type="file" id="fileInput" accept=".pdf" onChange={handleFileChange} className="hidden" />
+                  </label>
+                  {selectedFile && (
+                    <p className="text-sm" style={{ color: 'rgba(6, 147, 227, 1)' }}>
+                      Selected file: <span className="font-semibold">{selectedFile.name}</span>
+                    </p>
+                  )}
+                  <button
+                    onClick={handleSendTranscript}
+                    className="py-2 px-4 rounded-md shadow-md transition"
+                    style={{ color: '#fff', backgroundColor: 'rgba(6,147,227,1)' }}
+                  >
+                    Send Transcript
+                  </button>
+                </div>
               </div>
             )}
-            <button onClick={closeModal} className="modal-close-button">
-              Close
-            </button>
+
+            <button onClick={closeModal} className="modal-close-button">Close</button>
           </div>
         </div>
       )}
     </div>
   );
 }
-
-export default Chat;
