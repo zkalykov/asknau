@@ -88,7 +88,7 @@ function Demo() {
 
       <h1 className='first-word' style={{paddingBottom:'20px'}}>
       <FontAwesomeIcon icon={faArrowDown} style={{ marginRight: '10px' }} />
-        Watch Demo
+        Example - Watch Demo (will be replaced)
       </h1>
 
       <div className="youtube-video-wrapper">
@@ -110,7 +110,7 @@ function Demo() {
       <div className="how-works">
 
         <h3>Project idea</h3>
-        <p>This project founded by Zhyrgalbek Kalykov and supervised by Sabina Akhikary. Every year we have seen students asking same question again and again, and waiting days or weeks to get info, so we stored thousands of questions and fine tuned GPT so now it can answer them.</p>
+        <p>Will be written soon</p>
         
         
       </div>
