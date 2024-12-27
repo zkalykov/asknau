@@ -55,7 +55,14 @@ function Demo() {
         </Link>
       </center>
       <div className="demo-content">
-        <img src="https://leonardo-cdn.b-cdn.net/wp-content/uploads/2024/04/AI-video-of-woman-in-futuristic-environment.gif" alt="AI video" width={'100%'}/>
+        <video
+          src="/demo_asknau.mov"
+          autoPlay     
+          loop         
+          muted        
+          playsInline  
+          style={{ width: '100%', height: 'auto' }}
+        />
       </div>
 
 
