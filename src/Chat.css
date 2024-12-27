@@ -1,4 +1,8 @@
-html, body, #root {
+/* 
+ * GENERAL + CORE STYLES 
+ */
+
+ html, body, #root {
   height: 100%;
   margin: 0;
   font-family: 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
@@ -15,11 +19,9 @@ body {
   height: 100%;
 }
 
-.chat-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-}
+/* 
+ * APP CONTAINER 
+ */
 
 .app-container {
   display: flex;
@@ -27,34 +29,64 @@ body {
   height: 100%;
 }
 
-.chat-body::-webkit-scrollbar {
-  display: none;
+/* 
+ * CHAT BODY SCROLL AREA 
+ */
+
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
 }
 
+.chat-body::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in Chrome/Safari/Opera */
+}
+
+/* 
+ * MESSAGE BUBBLES 
+ */
+
 .message {
-  padding: 10px;
+  position: relative;
+  padding: 10px 15px;
   margin: 5px 0;
-  border-radius: 15px;
+  border-radius: 12px;
   max-width: 70%;
   word-wrap: break-word;
   font-size: 16px;
   line-height: 1.5;
   font-weight: 400;
-  position: relative;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease-in-out;
 }
 
 .user-message {
   background-color: #4b4b4b;
   color: #e6e5e5;
   align-self: flex-end;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
 }
 
 .bot-message {
-  color: #e6e5e5;
   align-self: flex-start;
-  font-size: 1.2rem;
+  color: #e6e5e5;
+  font-size: 1.1rem;
 }
+
+/* 
+ * TRANSCRIPT MESSAGE (ITALIC STYLE) 
+ */
+
+.transcript-message {
+  font-style: italic;
+  color: #bcbcbc; /* darker color */
+}
+
+/* 
+ * INPUT CONTAINER 
+ */
 
 .input-container {
   display: flex;
@@ -72,7 +104,7 @@ body {
   color: #fff;
   border: none;
   outline: none;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 400;
   padding-right: 10px;
 }
@@ -81,46 +113,55 @@ body {
   color: #aaa;
   font-style: normal;
 }
-.transcript-message {
-  font-style: italic;
-  color: #bcbcbc; /* darker color */
-}
+
+/* 
+ * SEND / ATTACH BUTTONS (common styles) 
+ */
 
 .input-container button {
   background: none;
-  border: none;              /* No border for a cleaner look */
-  color: #fff;               /* White color for the icon */
-  cursor: pointer;           /* Cursor indicates clickable items */
-  padding: 10px;             /* Adequate padding to form a circular shape */
-  border-radius: 50%;        /* Rounded border to make it perfectly circular */
-  display: flex;             /* Flex layout to center the icon */
-  align-items: center;       /* Center the icon vertically */
-  justify-content: center;   /* Center the icon horizontally */
-  width: 40px;               /* Fixed width for circle shape */
-  height: 40px;              /* Fixed height for circle shape */
-  transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 
 .input-container button:hover {
-  background-color: #333;
-  color: rgba(6, 147, 227, 1);
+  transform: scale(1.05);
 }
 
-.attachment-button{
+/* 
+ * ATTACHMENT BUTTON 
+ */
+
+.attachment-button {
   background: none;
-  border: none;              /* No border for a cleaner look */
-  color: #fff;               /* White color for the icon */
-  cursor: pointer;           /* Cursor indicates clickable items */
-  display: flex;             /* Flex layout to center the icon */
-  align-items: center;       /* Center the icon vertically */
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
   padding-left: 10px;
-  width: 40px;               /* Fixed width for circle shape */
-  height: 40px;              /* Fixed height for circle shape */
+  width: 40px;
+  height: 40px;
   transition: transform 0.3s ease;
 }
+
 .attachment-button:hover {
-  transform: scale(1.3);
+  transform: scale(1.2);
 }
+
+/* 
+ * GO-DOWN BUTTON 
+ */
+
 .go-down-button {
   position: fixed;
   bottom: 120px;
@@ -131,7 +172,14 @@ body {
   padding: 10px;
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 0 0 0.2px rgba(6, 147, 227, 1);
+  box-shadow: 0 0 3px rgba(6, 147, 227, 0.7);
+  transition: transform 0.2s;
+}
+.background-grey{
+  color:#d6d6d6;
+}
+.go-down-button:hover {
+  transform: scale(1.1);
 }
 
 .go-down-button svg {
@@ -139,29 +187,57 @@ body {
   height: 12px;
 }
 
+/* 
+ * PROFILE MENU 
+ */
+
 #profile-menu {
   background-color: #1e1e1e;
   border: 1px solid #333;
   z-index: 1;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
-#profile-menu a {
+#profile-menu a, 
+#profile-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
   color: #fff;
+  background: none;
+  padding: 8px 10px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
 }
 
-#profile-menu a:hover {
+#profile-menu a:hover, 
+#profile-menu button:hover {
   background-color: #333;
 }
 
+/* 
+ * ANCHOR STYLE (arkasy) 
+ */
+
 .arkasy {
-  transition: color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.3s ease;
+  width: 100%;
+  text-align: left;
 }
 
 .arkasy:hover {
   background-color: #242424;
-  cursor: pointer;
   color: rgba(6, 147, 227, 1);
+  cursor: pointer;
 }
+
+/* 
+ * RESPONSIVE 
+ */
 
 @media (max-width: 768px) {
   .message {
@@ -172,12 +248,16 @@ body {
   }
 }
 
+/* 
+ * COPY BUTTON 
+ */
+
 .copy-button {
   margin-top: 3px;
   margin-left: 1px;
   cursor: pointer;
   color: #aaa;
-  transition: color 0.2s;
+  transition: color 0.2s, transform 0.2s;
   display: flex;
   align-items: center;
   align-self: flex-start;
@@ -186,6 +266,7 @@ body {
 
 .copy-button:hover {
   color: rgba(6, 147, 227, 1);
+  transform: scale(1.05);
 }
 
 .copy-button svg {
@@ -215,12 +296,20 @@ body {
   opacity: 1;
 }
 
+/* 
+ * MESSAGE WRAPPER 
+ */
+
 .message-wrapper {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   position: relative;
 }
+
+/* 
+ * DISCLAIMER TEXT 
+ */
 
 .disclaimer {
   color: #6b7280;
@@ -229,9 +318,17 @@ body {
   margin-top: 8px;
 }
 
+/* 
+ * EXTRA PADDING 
+ */
+
 .padding-left-5 {
   padding-left: 5px;
 }
+
+/* 
+ * MODAL OVERLAY 
+ */
 
 .modal-overlay {
   position: fixed;
@@ -245,8 +342,11 @@ body {
   align-items: center;
   z-index: 1000;
   animation: modalFadeIn 0.3s ease-out;
-
 }
+
+/* 
+ * MODAL BOX 
+ */
 
 .modal-box {
   background-color: #424242;
@@ -269,6 +369,7 @@ body {
   max-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
+  margin-bottom: 16px; /* extra space so content won't bump into the button */
 }
 
 .modal-content::-webkit-scrollbar {
@@ -280,19 +381,28 @@ body {
   border-radius: 3px;
 }
 
+/* 
+ * MODAL CLOSE BUTTON 
+ */
+
 .modal-close-button {
-  margin-top: 16px;
   padding: 10px 20px;
   background-color: #333;
   color: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  align-self: flex-end;
+  transition: background-color 0.2s;
 }
 
 .modal-close-button:hover {
   background-color: rgba(6, 147, 227, 1);
 }
+
+/* 
+ * MODAL ANIMATIONS 
+ */
 
 @keyframes modalFadeIn {
   from {
@@ -312,6 +422,9 @@ body {
   }
 }
 
+/* 
+ * FILE INPUT 
+ */
 
 #fileInput {
   padding: 20px;

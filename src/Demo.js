@@ -55,10 +55,7 @@ function Demo() {
         </Link>
       </center>
       <div className="demo-content">
-        <video autoPlay muted loop playsInline>
-          <source src="https://download-video-ak.vimeocdn.com/v3-1/playback/857629e2-d70c-4660-8c77-fb33b595e17c/efe429d6-7a7c76c8?__token__=st=1733879134~exp=1733893534~acl=%2Fv3-1%2Fplayback%2F857629e2-d70c-4660-8c77-fb33b595e17c%2Fefe429d6-7a7c76c8%2A~hmac=d5599b20bc2aed8e94f2bac70e1a2784165d4990fa9a2156548a59de2cb30099&r=dXMtd2VzdDE%3D" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <img src="https://leonardo-cdn.b-cdn.net/wp-content/uploads/2024/04/AI-video-of-woman-in-futuristic-environment.gif" alt="AI video" width={'100%'}/>
       </div>
 
 
@@ -99,6 +96,7 @@ function Demo() {
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          width={'100%'}
         ></iframe>
       </div>
 

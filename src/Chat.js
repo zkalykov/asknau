@@ -1,4 +1,4 @@
-// src Chat.js
+// src/Chat.js
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Chat.css';
@@ -11,11 +11,16 @@ import {
   faClockRotateLeft,
   faPlus,
   faPaperclip,
-  faAngleRight,
+  faCircleChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 
+/* -------------------------
+ * COPY BUTTON COMPONENT
+ * -------------------------
+ */
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(text);
@@ -25,6 +30,7 @@ function CopyButton({ text }) {
       alert('Failed to copy text.');
     }
   };
+
   return (
     <button
       className="copy-button"
@@ -46,6 +52,46 @@ function CopyButton({ text }) {
   );
 }
 
+/* -------------------------
+ * HELPER: WORD-BY-WORD BOT TYPING
+ * -------------------------
+ */
+function typeBotMessage(answer, setMessages, setBotTyping) {
+  // Split the answer into words
+  const words = answer.split(' ');
+
+  // Insert a new, empty bot message
+  setMessages((prev) => [
+    ...prev,
+    { content: '', isUser: false, user_message_type: 'text' },
+  ]);
+
+  let index = 0;
+  const typingInterval = setInterval(() => {
+    setMessages((prev) => {
+      // Copy the array
+      const newMessages = [...prev];
+      // The last message is the one we just inserted
+      const lastMsgIndex = newMessages.length - 1;
+      // Accumulate words (add space if not the first word)
+      const oldContent = newMessages[lastMsgIndex].content;
+      newMessages[lastMsgIndex].content = oldContent + (index === 0 ? '' : ' ') + words[index];
+      return newMessages;
+    });
+
+    index++;
+    // Check if finished
+    if (index >= words.length) {
+      clearInterval(typingInterval);
+      setBotTyping(false);
+    }
+  }, 40); // Typing faster: 100ms per word
+}
+
+/* -------------------------
+ * CHAT COMPONENT
+ * -------------------------
+ */
 export default function Chat() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,12 +118,22 @@ export default function Chat() {
 
   const [urlChatId, setUrlChatId] = useState(null);
 
+  const [showImage, setShowImage] = useState(false);
+
+  const toggleImage = () => {
+    setShowImage(!showImage); // Toggle the visibility
+  };
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const newChatId = queryParams.get('id');
     setUrlChatId(newChatId);
   }, [location.search]);
 
+  /* -------------------------
+   * SCROLL TO BOTTOM
+   * -------------------------
+   */
   const scrollToBottom = useCallback(() => {
     if (chatBodyRef.current) {
       chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: 'smooth' });
@@ -85,8 +141,10 @@ export default function Chat() {
     }
   }, []);
 
-  
-
+  /* -------------------------
+   * FETCH USER PROFILE
+   * -------------------------
+   */
   const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -107,14 +165,24 @@ export default function Chat() {
       const data = await response.json();
       setUserName(data.full_name);
       setUserEmail(data.email);
-    } catch {}
+    } catch {
+      // Silent catch
+    }
   }, [navigate, API_BASE_URL]);
 
+  /* -------------------------
+   * APPEND MESSAGE (BASIC)
+   * -------------------------
+   */
   const appendMessage = (content, isUser = true, user_message_type = 'text') => {
     const stringContent = typeof content === 'object' ? JSON.stringify(content) : content;
     setMessages((prev) => [...prev, { content: stringContent, isUser, user_message_type }]);
   };
 
+  /* -------------------------
+   * SEND MESSAGE
+   * -------------------------
+   */
   const sendMessage = async () => {
     if (botTyping) return;
     const msg = inputValue.trim();
@@ -123,31 +191,39 @@ export default function Chat() {
       setErrorMessage('Message cannot exceed 2000 characters.');
       return;
     }
+
     setErrorMessage('');
+    // Append user's message
     appendMessage(msg, true, 'text');
     setInputValue('');
+
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
     }
+
     setBotTyping(true);
     const payload = { question: msg, chat_id: chatId, user_message_type: 'text' };
+
     try {
       const response = await fetch(`${API_BASE_URL}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
+
       if (response.status === 401) {
         localStorage.removeItem('token');
         navigate('/login');
         return;
       }
       if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+
       const data = await response.json();
       if (data.error) {
         appendMessage(`Error here: ${data.error}`, false, 'text');
+        setBotTyping(false);
       } else {
         if (!chatId && data.chat_id) {
           setChatId(data.chat_id);
@@ -155,19 +231,25 @@ export default function Chat() {
         } else {
           setChatId(data.chat_id);
         }
-        appendMessage(data.answer, false, 'text');
+
+        // WORD-BY-WORD BOT TYPING (NO "...")
+        typeBotMessage(data.answer, setMessages, setBotTyping);
       }
     } catch (error) {
       appendMessage(`Error here 2: ${error.message}`, false, 'text');
-    } finally {
       setBotTyping(false);
     }
   };
 
+  /* -------------------------
+   * HANDLE SCROLL
+   * -------------------------
+   */
   const handleChatBodyScroll = () => {
     const chatBody = chatBodyRef.current;
     const currentScrollTop = chatBody.scrollTop;
     const isAtBottom = Math.abs(chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight) < 1;
+
     if (currentScrollTop > lastScrollTop.current && !isAtBottom) {
       if (userScrolled) setShowGoDownButton(true);
     } else if (isAtBottom) {
@@ -180,10 +262,18 @@ export default function Chat() {
     lastScrollTop.current = currentScrollTop;
   };
 
+  /* -------------------------
+   * PROFILE MENU
+   * -------------------------
+   */
   const toggleProfileMenu = () => {
     setProfileMenuOpen(!profileMenuOpen);
   };
 
+  /* -------------------------
+   * MODAL HANDLERS
+   * -------------------------
+   */
   const openModal = (content) => {
     setModalContent(content);
     setModalOpen(true);
@@ -195,6 +285,10 @@ export default function Chat() {
     setSelectedFile(null);
   };
 
+  /* -------------------------
+   * FETCH HISTORY
+   * -------------------------
+   */
   const fetchHistory = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -212,9 +306,12 @@ export default function Chat() {
         return;
       }
       if (!response.ok) return;
+
       const data = await response.json();
       setChatHistory(data.history || []);
-    } catch {}
+    } catch {
+      // Silent catch
+    }
   }, [navigate, API_BASE_URL]);
 
   const handleHistoryClick = (e) => {
@@ -241,7 +338,9 @@ export default function Chat() {
           method: 'POST',
           headers: { Authorization: `Bearer ${token}` },
         });
-      } catch {}
+      } catch {
+        // Silent catch
+      }
       localStorage.removeItem('token');
       navigate('/login');
     } else {
@@ -251,7 +350,10 @@ export default function Chat() {
     setProfileMenuOpen(false);
   };
 
-  // Reintroduce loadChatMessages for history selection
+  /* -------------------------
+   * HISTORY MESSAGE LOADER
+   * -------------------------
+   */
   const loadChatMessages = useCallback(
     async (id) => {
       const token = localStorage.getItem('token');
@@ -259,7 +361,7 @@ export default function Chat() {
         navigate('/login');
         return;
       }
-      
+
       try {
         const response = await fetch(`${API_BASE_URL}/chats/${id}/messages`, {
           method: 'GET',
@@ -271,21 +373,33 @@ export default function Chat() {
           return;
         }
         if (!response.ok) throw new Error('Failed to fetch chat messages');
+
         const data = await response.json();
         const loadedMessages = data.messages.flatMap((m) => {
           const msgs = [];
           if (m.user_message) {
-            let displayContent = m.user_message_type === 'transcript' ? 'transcript sent' : m.user_message;
-            msgs.push({ content: displayContent, isUser: true, user_message_type: m.user_message_type || 'text' });
+            let displayContent =
+              m.user_message_type === 'transcript' ? 'transcript sent' : m.user_message;
+            msgs.push({
+              content: displayContent,
+              isUser: true,
+              user_message_type: m.user_message_type || 'text',
+            });
           }
           if (m.bot_message) {
-            msgs.push({ content: m.bot_message, isUser: false, user_message_type: m.user_message_type || 'text' });
+            msgs.push({
+              content: m.bot_message,
+              isUser: false,
+              user_message_type: m.user_message_type || 'text',
+            });
           }
           return msgs;
         });
         setChatId(id);
         setMessages(loadedMessages);
-      } catch {}
+      } catch {
+        // Silent catch
+      }
     },
     [navigate, API_BASE_URL]
   );
@@ -295,10 +409,13 @@ export default function Chat() {
     setMessages([]);
     setChatId(selectedChatId);
     navigate(`/chat?id=${selectedChatId}`);
-    // Load the messages for the selected history chat
     loadChatMessages(selectedChatId);
   };
 
+  /* -------------------------
+   * ATTACHMENT HANDLING
+   * -------------------------
+   */
   const handleAttachmentClick = (e) => {
     e.preventDefault();
     openModal('Attachment');
@@ -311,14 +428,17 @@ export default function Chat() {
 
   const handleSendTranscript = async () => {
     if (!selectedFile) return;
+
     const token = localStorage.getItem('token');
     if (!token) {
       navigate('/login');
       return;
     }
+
     const formData = new FormData();
     formData.append('file', selectedFile);
     if (chatId) formData.append('chat_id', chatId);
+
     try {
       const response = await fetch(`${API_BASE_URL}/attachment-transcript`, {
         method: 'POST',
@@ -331,45 +451,67 @@ export default function Chat() {
         return;
       }
       if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
+
       const data = await response.json();
       if (!chatId && data.chat_id) {
         setChatId(data.chat_id);
         navigate(`/chat?id=${data.chat_id}`);
       }
+
       closeModal();
       appendMessage('transcript sent', true, 'transcript');
       setBotTyping(true);
-      const payload = { question: 'transcript sent', chat_id: chatId || data.chat_id, user_message_type: 'transcript' };
+
+      // Let the bot respond to "transcript sent"
+      const payload = {
+        question: 'transcript sent',
+        chat_id: chatId || data.chat_id,
+        user_message_type: 'transcript',
+      };
+
       try {
         const resp = await fetch(`${API_BASE_URL}/ask`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify(payload),
         });
+
         if (resp.status === 401) {
           localStorage.removeItem('token');
           navigate('/login');
           return;
         }
         if (!resp.ok) throw new Error(`Server error: ${resp.statusText}`);
+
         const respData = await resp.json();
         if (respData.error) {
           appendMessage(`Error here: ${respData.error}`, false, 'text');
+          setBotTyping(false);
         } else {
           setChatId(respData.chat_id);
-          appendMessage(respData.answer, false, 'text');
+          // Word-by-word typing again
+          typeBotMessage(respData.answer, setMessages, setBotTyping);
         }
       } catch (error) {
         appendMessage(`Error here 2: ${error.message}`, false, 'text');
-      } finally {
         setBotTyping(false);
       }
-    } catch {}
+    } catch {
+      // Silent catch
+    }
   };
 
+  /* -------------------------
+   * CLOSE PROFILE MENU IF CLICKED OUTSIDE
+   * -------------------------
+   */
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target) && event.target.nodeName !== 'IMG') {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target) &&
+        event.target.nodeName !== 'IMG'
+      ) {
         setProfileMenuOpen(false);
       }
     };
@@ -379,22 +521,34 @@ export default function Chat() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [profileMenuOpen]);
 
+  /* -------------------------
+   * FETCH PROFILE ON INIT
+   * -------------------------
+   */
   useEffect(() => {
     fetchUserProfile();
   }, [fetchUserProfile]);
 
-  // Removed the automatic loading on URL chat ID change, to preserve array-list style for new chats
-
+  /* -------------------------
+   * AUTO SCROLL ON NEW MESSAGES
+   * -------------------------
+   */
   useEffect(() => {
-    if (!userScrolled) scrollToBottom();
+    if (!userScrolled) {
+      scrollToBottom();
+    }
   }, [messages, userScrolled, scrollToBottom]);
 
   const noChatSelected = !chatId && messages.length === 0;
 
-  
+  /* -------------------------
+   * RENDER
+   * -------------------------
+   */
   return (
     <div className="app-container text-gray-300 flex items-center justify-center h-full">
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
+        {/* HEADER */}
         <div className="chat-header p-4 flex items-center justify-between">
           <div className="flex items-center">
             <span className="text-2xl font-bold">AskNAU</span>
@@ -454,7 +608,12 @@ export default function Chat() {
           </div>
         </div>
 
-        <div className="chat-body flex flex-col p-4 space-y-4 overflow-y-auto" ref={chatBodyRef} onScroll={handleChatBodyScroll}>
+        {/* CHAT BODY */}
+        <div
+          className="chat-body flex flex-col p-4 space-y-4 overflow-y-auto"
+          ref={chatBodyRef}
+          onScroll={handleChatBodyScroll}
+        >
           {noChatSelected && (
             <div className="flex items-center justify-center h-full text-3xl opacity-80">
               Say Hello to AskNAU !
@@ -478,15 +637,14 @@ export default function Chat() {
                 )}
               </div>
             ))}
-          {botTyping && (
-            <div className="message bot-message">
-              <div className="message-wrapper">
-                <div className="message-content">...</div>
-              </div>
-            </div>
-          )}
+
+          {/* 
+            Removed the "..." placeholder for bot typing
+            since we now do word-by-word typing
+          */}
         </div>
 
+        {/* CHAT FOOTER */}
         <div className="chat-footer p-4 flex flex-col items-center space-y-2">
           {errorMessage && <div className="error-message text-red-600 text-sm">{errorMessage}</div>}
           <div className="input-container flex-1 w-full flex items-center">
@@ -514,13 +672,14 @@ export default function Chat() {
               autoComplete="off"
               className="flex-grow p-2 bg-gray-800 text-white rounded-l-full"
             />
-            <button onClick={sendMessage} className="p-2 bg-blue-600 rounded-r-md">
-              <FontAwesomeIcon icon={faAngleRight} className="text-white" />
+            <button onClick={sendMessage} className="rounded-r-md">
+              <FontAwesomeIcon icon={faCircleChevronRight} size="xl" className='background-grey'/>
             </button>
           </div>
-          <div className="disclaimer">@ AskNAU - 2024</div>
+          <div className="disclaimer">This is early version. Please check information before use !</div>
         </div>
 
+        {/* GO DOWN BUTTON */}
         {showGoDownButton && (
           <button className="go-down-button" onClick={scrollToBottom}>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -530,6 +689,7 @@ export default function Chat() {
         )}
       </div>
 
+      {/* MODAL OVERLAY */}
       {modalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
@@ -537,6 +697,7 @@ export default function Chat() {
               {modalContent === 'Profile' ? 'Profile' : modalContent === 'History' ? 'History' : 'Attachment'}
             </h2>
 
+            {/* PROFILE MODAL */}
             {modalContent === 'Profile' && (
               <div className="space-y-4 modal-content">
                 <p>
@@ -549,6 +710,7 @@ export default function Chat() {
               </div>
             )}
 
+            {/* HISTORY MODAL */}
             {modalContent === 'History' && (
               <div className="space-y-4 modal-content">
                 {chatHistory && chatHistory.length > 0 ? (
@@ -559,7 +721,8 @@ export default function Chat() {
                       onClick={() => loadSelectedHistory(h.chat_id)}
                     >
                       {h.history_title}
-                      {h.title ? ` - ${h.title}` : ''} - {h.date_created ? new Date(h.date_created).toLocaleString() : ''}
+                      {h.title ? ` - ${h.title}` : ''} -{' '}
+                      {h.date_created ? new Date(h.date_created).toLocaleString() : ''}
                     </div>
                   ))
                 ) : (
@@ -568,6 +731,7 @@ export default function Chat() {
               </div>
             )}
 
+            {/* ATTACHMENT MODAL */}
             {modalContent === 'Attachment' && (
               <div className="modal-content space-y-6 p-6 bg-[#4b4b4b] text-[#fff] rounded-lg shadow-lg">
                 <h1 className="text-xl font-semibold text-center">Upload Transcript for ASKNAU AI</h1>
@@ -575,9 +739,29 @@ export default function Chat() {
                   Please upload the correct transcript as shown in the example. This will help ASKNAU AI process
                   information about your grades, major, and more.
                 </p>
-                <div className="flex justify-center">
-                  <img src="https://i.imgur.com/JcNsvaX.png" alt="Transcript Example" className="rounded-lg shadow-md max-w-full" />
+
+
+                <div className="flex flex-col items-center space-y-4">
+                  
+                  <button
+                    onClick={toggleImage}
+                    className="block text-center text-[#fff] border border-[#fff] rounded-lg p-2 cursor-pointer hover:bg-[#4b4b4b] transition"
+                  >
+                    {showImage ? 'Hide Example' : 'Show Example'}
+                  </button>
+
+                  
+                  {showImage && (
+                    <div className="flex justify-center mt-4">
+                      <img
+                        src="https://i.imgur.com/JcNsvaX.png"
+                        alt="Transcript Example"
+                        className="rounded-lg shadow-md max-w-full"
+                      />
+                    </div>
+                  )}
                 </div>
+
                 <div className="flex flex-col items-center space-y-4">
                   <label
                     htmlFor="fileInput"
@@ -602,7 +786,9 @@ export default function Chat() {
               </div>
             )}
 
-            <button onClick={closeModal} className="modal-close-button">Close</button>
+            <button onClick={closeModal} className="modal-close-button">
+              Close
+            </button>
           </div>
         </div>
       )}
