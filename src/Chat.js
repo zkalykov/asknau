@@ -676,7 +676,7 @@ export default function Chat() {
               <FontAwesomeIcon icon={faCircleChevronRight} size="xl" className='background-grey'/>
             </button>
           </div>
-          <div className="disclaimer">This is early version. Please check information before use !</div>
+          <div className="disclaimer">This is early version. Please check information before use !!!</div>
         </div>
 
         {/* GO DOWN BUTTON */}
