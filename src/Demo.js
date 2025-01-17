@@ -115,7 +115,7 @@ function Demo() {
       <div className="how-works">
 
         <h3>Project idea</h3>
-        <p>Will be written soon</p>
+        <p>Reason to create this website, was to help students & teachers to cut their time, doing same things again and again. I have faced several occasions where student ask same questions, where they could search online, but it may be problem to go over a lot of pages and waste time. And I thought creating AI which will be able to search for themselves would be great.</p>
         
         
       </div>
