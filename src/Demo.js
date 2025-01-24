@@ -8,7 +8,6 @@ import { faUpRightFromSquare, faBars, faTimes } from '@fortawesome/free-solid-sv
 import { faFile, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 
 function Demo() {
@@ -90,35 +89,42 @@ function Demo() {
         </div>
       </div>
 
-      <h1 className='first-word' style={{paddingBottom:'20px'}}>
+      
+
+
+      <h1 className='read-more'>
       <FontAwesomeIcon icon={faArrowDown} style={{ marginRight: '10px' }} />
-        Example - Watch Demo (will be replaced)
-      </h1>
-
-      <div className="youtube-video-wrapper">
-        <iframe
-          className="youtube-video"
-          src="https://www.youtube.com/embed/HK6y8DAPN_0"
-          title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          width={'100%'}
-        ></iframe>
-      </div>
-
-
-      <h1 className='first-word'>
-        <FontAwesomeIcon icon={faPlus} style={{ marginRight: '10px'}}/>
           Read More
         </h1>
       <div className="how-works">
 
         <h3>Project idea</h3>
         <p>Reason to create this website, was to help students & teachers to cut their time, doing same things again and again. I have faced several occasions where student ask same questions, where they could search online, but it may be problem to go over a lot of pages and waste time. And I thought creating AI which will be able to search for themselves would be great.</p>
-        
+      </div>
+
+      <div className="how-works">
+
+        <h3>Development</h3>
+        <p>This is more likely Hybrid AI, It uses both <span className='highlight-yellow'>GPT API</span> and <span className='highlight-yellow'>Local Trained Model</span> from database.</p>
+        <p>This project built with React for front-end, Flask for backend, TailwindCSS for style. Uses GPT API and GPT APIs. Used platforms such as <span className='highlight-yellow'>Vercel</span>, <span className='highlight-yellow'>Heroku</span> and Heroku Database, Github.</p>
+      </div>
+
+      <div className="how-works">
+        <h3>Presentation</h3>
+        <img src="chat-first-pic.png" alt="Project Illustration" className="how-works-image" />
+        <p>This is first page, made everything simple. It has a profile button to see Profile, Go to New Chat, <span className='highlight-yellow'>History</span>, Demo and of course Log out buttons</p>
+        <img src="chat-second-pic.png" alt="Project Illustration" className="how-works-image" />
+        <img src="chat-third-pic.png" alt="Project Illustration" className="how-works-image" />
+      </div>
+      <div className="how-works">
+        <h3>Contribution</h3>
+        {/* <img src="chat-first-pic.png" alt="Project Illustration" className="how-works-image" /> */}
+        <p>Feel free to submit your pull requests on Github. Source code: <a className='highlight-yellow' href="https://github.com/zkalykov/asknau">https://github.com/zkalykov/asknau</a> !</p>
+        <p>If you have questions feel free to connect me at <a className='highlight-yellow' href="mailto:zkalykov@na.edu">zkalykov@na.edu</a></p>
         
       </div>
+      
+      
 
 
       <div className="footer">

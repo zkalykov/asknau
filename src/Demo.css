@@ -129,6 +129,7 @@
   color:#aaa;
   text-align: center;
 }
+
 .second-word {
   font-size: 5rem;
   font-weight: bold;
@@ -137,6 +138,15 @@
   text-align: center;
   padding-bottom: 20px;
 }
+
+.read-more {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 100px;
+  color:#aaa;
+  text-align: center;
+}
+
 .click-here{
   
   
@@ -174,9 +184,13 @@ video {
   width: 90%; /* Increased width */
   max-width: 1200px; /* Maximum width to avoid overly large sizes on big screens */
   height: auto; /* Maintain aspect ratio */
+  box-shadow: 0px 0px 20px rgba(216, 163, 4, 0.3), 0px 0px 30px rgba(216, 163, 4, 0.19);
+
 }
 
-
+.highlight-yellow{
+  color: rgb(216, 163, 4);
+}
 
 
 .can-do {
@@ -197,7 +211,7 @@ video {
 }
 
 .feature h3 {
-  font-size:1.4rem;
+  font-size:1.2rem;
   color: rgba(6, 147, 227, 1); /* Color for headings to stand out */
   margin-bottom: 10px; /* Spacing under the heading */
   font-weight: bold;;
@@ -266,7 +280,14 @@ video {
   line-height: 1.6; /* Increased line height for better legibility */
 }
 
-
+.how-works-image {
+  display: block; /* Center the image horizontally */
+  padding-top:40px;
+  margin: 30px auto; /* Add space above and below */
+  max-width: 100%; /* Make it responsive */
+  border-radius: 8px; /* Slightly rounded corners for aesthetics */
+  box-shadow: 0px 0px 10px rgba(216, 163, 4, 0.3), 0px 0px 10px rgba(216, 163, 4, 0.19);
+}
 
 .footer {
   text-align: center;
