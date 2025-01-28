@@ -553,7 +553,7 @@ export default function Chat() {
           <div className="flex items-center">
             <span className="text-2xl font-bold">AskNAU</span>
             <span style={{ color: 'rgba(6,147,227,1)' }} className="text-x font-normal ml-2">
-              (North American University AI)
+              North American University AI
             </span>
           </div>
           <div className="relative">
