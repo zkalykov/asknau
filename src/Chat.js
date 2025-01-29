@@ -12,6 +12,8 @@ import {
   faPlus,
   faPaperclip,
   faCircleChevronRight,
+  faBars,
+  faTimes
 } from '@fortawesome/free-solid-svg-icons';
 
 /* -------------------------
@@ -57,7 +59,6 @@ function CopyButton({ text }) {
  * -------------------------
  */
 function typeBotMessage(answer, setMessages, setBotTyping) {
-  // Split the answer into words
   const words = answer.split(' ');
 
   // Insert a new, empty bot message
@@ -69,23 +70,20 @@ function typeBotMessage(answer, setMessages, setBotTyping) {
   let index = 0;
   const typingInterval = setInterval(() => {
     setMessages((prev) => {
-      // Copy the array
       const newMessages = [...prev];
-      // The last message is the one we just inserted
       const lastMsgIndex = newMessages.length - 1;
-      // Accumulate words (add space if not the first word)
       const oldContent = newMessages[lastMsgIndex].content;
-      newMessages[lastMsgIndex].content = oldContent + (index === 0 ? '' : ' ') + words[index];
+      newMessages[lastMsgIndex].content =
+        oldContent + (index === 0 ? '' : ' ') + words[index];
       return newMessages;
     });
 
     index++;
-    // Check if finished
     if (index >= words.length) {
       clearInterval(typingInterval);
       setBotTyping(false);
     }
-  }, 40); // Typing faster: 100ms per word
+  }, 40);
 }
 
 /* -------------------------
@@ -102,7 +100,11 @@ export default function Chat() {
   const [botTyping, setBotTyping] = useState(false);
   const [userScrolled, setUserScrolled] = useState(false);
   const [showGoDownButton, setShowGoDownButton] = useState(false);
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+
+  // SIDEBAR
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Various states
   const [errorMessage, setErrorMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
@@ -113,16 +115,11 @@ export default function Chat() {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const chatBodyRef = useRef(null);
-  const profileMenuRef = useRef(null);
   const lastScrollTop = useRef(0);
-
   const [urlChatId, setUrlChatId] = useState(null);
 
   const [showImage, setShowImage] = useState(false);
-
-  const toggleImage = () => {
-    setShowImage(!showImage); // Toggle the visibility
-  };
+  const toggleImage = () => setShowImage(!showImage);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -130,21 +127,18 @@ export default function Chat() {
     setUrlChatId(newChatId);
   }, [location.search]);
 
-  /* -------------------------
-   * SCROLL TO BOTTOM
-   * -------------------------
-   */
+  /* SCROLL TO BOTTOM */
   const scrollToBottom = useCallback(() => {
     if (chatBodyRef.current) {
-      chatBodyRef.current.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: 'smooth' });
+      chatBodyRef.current.scrollTo({
+        top: chatBodyRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
       setUserScrolled(false);
     }
   }, []);
 
-  /* -------------------------
-   * FETCH USER PROFILE
-   * -------------------------
-   */
+  /* FETCH USER PROFILE */
   const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -166,34 +160,28 @@ export default function Chat() {
       setUserName(data.full_name);
       setUserEmail(data.email);
     } catch {
-      // Silent catch
+      // Silent
     }
   }, [navigate, API_BASE_URL]);
 
-  /* -------------------------
-   * APPEND MESSAGE (BASIC)
-   * -------------------------
-   */
+  /* APPEND MESSAGE */
   const appendMessage = (content, isUser = true, user_message_type = 'text') => {
     const stringContent = typeof content === 'object' ? JSON.stringify(content) : content;
     setMessages((prev) => [...prev, { content: stringContent, isUser, user_message_type }]);
   };
 
-  /* -------------------------
-   * SEND MESSAGE
-   * -------------------------
-   */
+  /* SEND MESSAGE */
   const sendMessage = async () => {
     if (botTyping) return;
     const msg = inputValue.trim();
     if (!msg) return;
+
     if (msg.length > 2000) {
       setErrorMessage('Message cannot exceed 2000 characters.');
       return;
     }
 
     setErrorMessage('');
-    // Append user's message
     appendMessage(msg, true, 'text');
     setInputValue('');
 
@@ -209,7 +197,10 @@ export default function Chat() {
     try {
       const response = await fetch(`${API_BASE_URL}/ask`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify(payload),
       });
 
@@ -231,8 +222,6 @@ export default function Chat() {
         } else {
           setChatId(data.chat_id);
         }
-
-        // WORD-BY-WORD BOT TYPING (NO "...")
         typeBotMessage(data.answer, setMessages, setBotTyping);
       }
     } catch (error) {
@@ -241,14 +230,12 @@ export default function Chat() {
     }
   };
 
-  /* -------------------------
-   * HANDLE SCROLL
-   * -------------------------
-   */
+  /* HANDLE SCROLL */
   const handleChatBodyScroll = () => {
     const chatBody = chatBodyRef.current;
     const currentScrollTop = chatBody.scrollTop;
-    const isAtBottom = Math.abs(chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight) < 1;
+    const isAtBottom =
+      Math.abs(chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight) < 1;
 
     if (currentScrollTop > lastScrollTop.current && !isAtBottom) {
       if (userScrolled) setShowGoDownButton(true);
@@ -262,33 +249,18 @@ export default function Chat() {
     lastScrollTop.current = currentScrollTop;
   };
 
-  /* -------------------------
-   * PROFILE MENU
-   * -------------------------
-   */
-  const toggleProfileMenu = () => {
-    setProfileMenuOpen(!profileMenuOpen);
-  };
-
-  /* -------------------------
-   * MODAL HANDLERS
-   * -------------------------
-   */
+  /* MODALS */
   const openModal = (content) => {
     setModalContent(content);
     setModalOpen(true);
   };
-
   const closeModal = () => {
     setModalOpen(false);
     setModalContent('');
     setSelectedFile(null);
   };
 
-  /* -------------------------
-   * FETCH HISTORY
-   * -------------------------
-   */
+  /* HISTORY */
   const fetchHistory = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -310,7 +282,7 @@ export default function Chat() {
       const data = await response.json();
       setChatHistory(data.history || []);
     } catch {
-      // Silent catch
+      // Silent
     }
   }, [navigate, API_BASE_URL]);
 
@@ -318,42 +290,9 @@ export default function Chat() {
     e.preventDefault();
     fetchHistory();
     openModal('History');
-    setProfileMenuOpen(false);
+    setSidebarOpen(false);
   };
 
-  const handleNewChatClick = (e) => {
-    e.preventDefault();
-    setChatId(null);
-    setMessages([]);
-    navigate('/chat');
-    setProfileMenuOpen(false);
-  };
-
-  const handleLogoutClick = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        await fetch(`${API_BASE_URL}/logout`, {
-          method: 'POST',
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } catch {
-        // Silent catch
-      }
-      localStorage.removeItem('token');
-      navigate('/login');
-    } else {
-      localStorage.removeItem('token');
-      navigate('/login');
-    }
-    setProfileMenuOpen(false);
-  };
-
-  /* -------------------------
-   * HISTORY MESSAGE LOADER
-   * -------------------------
-   */
   const loadChatMessages = useCallback(
     async (id) => {
       const token = localStorage.getItem('token');
@@ -379,7 +318,9 @@ export default function Chat() {
           const msgs = [];
           if (m.user_message) {
             let displayContent =
-              m.user_message_type === 'transcript' ? 'transcript sent' : m.user_message;
+              m.user_message_type === 'transcript'
+                ? 'transcript sent'
+                : m.user_message;
             msgs.push({
               content: displayContent,
               isUser: true,
@@ -398,7 +339,7 @@ export default function Chat() {
         setChatId(id);
         setMessages(loadedMessages);
       } catch {
-        // Silent catch
+        // Silent
       }
     },
     [navigate, API_BASE_URL]
@@ -412,18 +353,43 @@ export default function Chat() {
     loadChatMessages(selectedChatId);
   };
 
-  /* -------------------------
-   * ATTACHMENT HANDLING
-   * -------------------------
-   */
+  const handleNewChatClick = (e) => {
+    e.preventDefault();
+    setChatId(null);
+    setMessages([]);
+    navigate('/chat');
+    setSidebarOpen(false);
+  };
+
+  /* PROFILE & LOGOUT */
+  const handleLogoutClick = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        await fetch(`${API_BASE_URL}/logout`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch {
+        // Silent
+      }
+      localStorage.removeItem('token');
+      navigate('/login');
+    } else {
+      localStorage.removeItem('token');
+      navigate('/login');
+    }
+    setSidebarOpen(false);
+  };
+
+  /* ATTACHMENT */
   const handleAttachmentClick = (e) => {
     e.preventDefault();
     openModal('Attachment');
   };
-
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setSelectedFile(file);
+    setSelectedFile(e.target.files[0]);
   };
 
   const handleSendTranscript = async () => {
@@ -462,7 +428,6 @@ export default function Chat() {
       appendMessage('transcript sent', true, 'transcript');
       setBotTyping(true);
 
-      // Let the bot respond to "transcript sent"
       const payload = {
         question: 'transcript sent',
         chat_id: chatId || data.chat_id,
@@ -472,7 +437,10 @@ export default function Chat() {
       try {
         const resp = await fetch(`${API_BASE_URL}/ask`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
           body: JSON.stringify(payload),
         });
 
@@ -489,7 +457,6 @@ export default function Chat() {
           setBotTyping(false);
         } else {
           setChatId(respData.chat_id);
-          // Word-by-word typing again
           typeBotMessage(respData.answer, setMessages, setBotTyping);
         }
       } catch (error) {
@@ -497,42 +464,16 @@ export default function Chat() {
         setBotTyping(false);
       }
     } catch {
-      // Silent catch
+      // Silent
     }
   };
 
-  /* -------------------------
-   * CLOSE PROFILE MENU IF CLICKED OUTSIDE
-   * -------------------------
-   */
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        profileMenuRef.current &&
-        !profileMenuRef.current.contains(event.target) &&
-        event.target.nodeName !== 'IMG'
-      ) {
-        setProfileMenuOpen(false);
-      }
-    };
-    if (profileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [profileMenuOpen]);
-
-  /* -------------------------
-   * FETCH PROFILE ON INIT
-   * -------------------------
-   */
+  /* INIT FETCH */
   useEffect(() => {
     fetchUserProfile();
   }, [fetchUserProfile]);
 
-  /* -------------------------
-   * AUTO SCROLL ON NEW MESSAGES
-   * -------------------------
-   */
+  /* AUTO SCROLL */
   useEffect(() => {
     if (!userScrolled) {
       scrollToBottom();
@@ -541,70 +482,87 @@ export default function Chat() {
 
   const noChatSelected = !chatId && messages.length === 0;
 
-  /* -------------------------
-   * RENDER
-   * -------------------------
-   */
   return (
     <div className="app-container text-gray-300 flex items-center justify-center h-full">
+      {/* SIDEBAR OVERLAY */}
+      <div
+        className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+      ></div>
+
+      {/* SIDEBAR */}
+      <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-body">
+          <button className="sidebar-item" onClick={handleNewChatClick}>
+            <FontAwesomeIcon icon={faPlus} style={{ marginRight: '10px' }} />
+            New Chat
+          </button>
+
+          <button className="sidebar-item" onClick={handleHistoryClick}>
+            <FontAwesomeIcon icon={faClockRotateLeft} style={{ marginRight: '10px' }} />
+            History
+          </button>
+        </div>
+
+        <div className="sidebar-footer">
+          <button
+            className="sidebar-item"
+            onClick={() => {
+              openModal('Profile');
+              setSidebarOpen(false);
+            }}
+          >
+            <FontAwesomeIcon icon={faUser} style={{ marginRight: '10px' }} />
+            Profile
+          </button>
+
+          <button
+            className="sidebar-item"
+            onClick={(e) => {
+              e.preventDefault();
+              navigate('/demo');
+              setSidebarOpen(false);
+            }}
+          >
+            <FontAwesomeIcon icon={faPlay} style={{ marginRight: '10px' }} />
+            Demo
+          </button>
+
+          <button className="sidebar-item sidebar-item-logout" onClick={handleLogoutClick}>
+            <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: '10px' }} />
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* FLOATING 'X' */}
+      {sidebarOpen && (
+        <button
+          className="close-sidebar-btn-floating"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+      )}
+
+      {/* MAIN CONTENT */}
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
         {/* HEADER */}
-        <div className="chat-header p-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <span className="text-2xl font-bold">AskNAU</span>
-            <span style={{ color: 'rgba(6,147,227,1)' }} className="text-x font-normal ml-2">
-              North American University AI
+        <div className="header">
+          {/* Hamburger icon always bars */}
+          <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+
+          {/* AskNAU on the right */}
+          <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
+            <span className="text-2xl font-bold"></span>
+            <span
+              style={{ color: 'rgba(6,147,227,1)' }}
+              className="text-2xl font-bold ml-2"
+            >
+              NAU AI
             </span>
-          </div>
-          <div className="relative">
-            <img
-              src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-              alt="User profile"
-              className="w-8 h-8 rounded-full cursor-pointer"
-              onClick={toggleProfileMenu}
-            />
-            {profileMenuOpen && (
-              <div
-                id="profile-menu"
-                ref={profileMenuRef}
-                className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-gray-700"
-              >
-                <button
-                  className="block px-4 py-2 text-left w-full arkasy"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openModal('Profile');
-                    setProfileMenuOpen(false);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faUser} style={{ marginRight: '10px' }} />
-                  Profile
-                </button>
-                <button className="block px-4 py-2 text-left w-full arkasy" onClick={handleNewChatClick}>
-                  <FontAwesomeIcon icon={faPlus} style={{ marginRight: '10px' }} />
-                  New Chat
-                </button>
-                <button className="block px-4 py-2 text-left w-full arkasy" onClick={handleHistoryClick}>
-                  <FontAwesomeIcon icon={faClockRotateLeft} style={{ marginRight: '10px' }} />
-                  History
-                </button>
-                <button
-                  className="block px-4 py-2 text-left w-full arkasy"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate('/demo');
-                    setProfileMenuOpen(false);
-                  }}
-                >
-                  <FontAwesomeIcon icon={faPlay} style={{ marginRight: '10px' }} />
-                  Demo
-                </button>
-                <button className="block px-4 py-2 text-left w-full arkasy" onClick={handleLogoutClick}>
-                  <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: '10px' }} />
-                  Logout
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
@@ -621,32 +579,36 @@ export default function Chat() {
           )}
 
           {!noChatSelected &&
-            messages.map((message, index) => (
-              <div key={index} className={`message ${message.isUser ? 'user-message' : 'bot-message'}`}>
-                {message.isUser ? (
-                  message.user_message_type === 'transcript' ? (
-                    <span className="transcript-message">transcript sent</span>
+            messages.map((message, index) => {
+              const messageClass = message.isUser
+                ? 'user-message'
+                : 'bot-message';
+              return (
+                <div key={index} className={`message ${messageClass}`}>
+                  {message.isUser ? (
+                    message.user_message_type === 'transcript' ? (
+                      <span className="transcript-message">transcript sent</span>
+                    ) : (
+                      message.content
+                    )
                   ) : (
-                    message.content
-                  )
-                ) : (
-                  <div className="message-wrapper">
-                    <div className="message-content">{message.content}</div>
-                    <CopyButton text={message.content} />
-                  </div>
-                )}
-              </div>
-            ))}
-
-          {/* 
-            Removed the "..." placeholder for bot typing
-            since we now do word-by-word typing
-          */}
+                    <div className="message-wrapper">
+                      <div className="message-content">{message.content}</div>
+                      <CopyButton text={message.content} />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
         </div>
 
-        {/* CHAT FOOTER */}
+        {/* FOOTER */}
         <div className="chat-footer p-4 flex flex-col items-center space-y-2">
-          {errorMessage && <div className="error-message text-red-600 text-sm">{errorMessage}</div>}
+          {errorMessage && (
+            <div className="error-message text-red-600 text-sm">
+              {errorMessage}
+            </div>
+          )}
           <div className="input-container flex-1 w-full flex items-center">
             <a onClick={handleAttachmentClick} className="attachment-button">
               <FontAwesomeIcon icon={faPaperclip} className="text-white" />
@@ -673,17 +635,28 @@ export default function Chat() {
               className="flex-grow p-2 bg-gray-800 text-white rounded-l-full"
             />
             <button onClick={sendMessage} className="rounded-r-md">
-              <FontAwesomeIcon icon={faCircleChevronRight} size="xl" className='background-grey'/>
+              <FontAwesomeIcon
+                icon={faCircleChevronRight}
+                size="xl"
+                className="background-grey"
+              />
             </button>
           </div>
-          <div className="disclaimer">This is early version. Please check information before use !!!</div>
+          <div className="disclaimer">
+            This is early version. Please check information before use !!!
+          </div>
         </div>
 
-        {/* GO DOWN BUTTON */}
+        {/* GO-DOWN BUTTON */}
         {showGoDownButton && (
           <button className="go-down-button" onClick={scrollToBottom}>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
             </svg>
           </button>
         )}
@@ -694,7 +667,11 @@ export default function Chat() {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-box" onClick={(e) => e.stopPropagation()}>
             <h2 className="modal-title font-bold">
-              {modalContent === 'Profile' ? 'Profile' : modalContent === 'History' ? 'History' : 'Attachment'}
+              {modalContent === 'Profile'
+                ? 'Profile'
+                : modalContent === 'History'
+                ? 'History'
+                : 'Attachment'}
             </h2>
 
             {/* PROFILE MODAL */}
@@ -706,7 +683,9 @@ export default function Chat() {
                 <p>
                   <span className="font-semibold">Email:</span> {userEmail}
                 </p>
-                <div className="disclaimer">For profile questions, contact zkalykov@na.edu</div>
+                <div className="disclaimer">
+                  For profile questions, contact zkalykov@na.edu
+                </div>
               </div>
             )}
 
@@ -722,7 +701,9 @@ export default function Chat() {
                     >
                       {h.history_title}
                       {h.title ? ` - ${h.title}` : ''} -{' '}
-                      {h.date_created ? new Date(h.date_created).toLocaleString() : ''}
+                      {h.date_created
+                        ? new Date(h.date_created).toLocaleString()
+                        : ''}
                     </div>
                   ))
                 ) : (
@@ -734,15 +715,16 @@ export default function Chat() {
             {/* ATTACHMENT MODAL */}
             {modalContent === 'Attachment' && (
               <div className="modal-content space-y-6 p-6 bg-[#4b4b4b] text-[#fff] rounded-lg shadow-lg">
-                <h1 className="text-xl font-semibold text-center">Upload Transcript for ASKNAU AI</h1>
+                <h1 className="text-xl font-semibold text-center">
+                  Upload Transcript for ASKNAU AI
+                </h1>
                 <p className="text-sm text-[#fff] text-center">
-                  Please upload the correct transcript as shown in the example. This will help ASKNAU AI process
-                  information about your grades, major, and more.
+                  Please upload the correct transcript as shown in the example.
+                  This will help ASKNAU AI process information about your grades,
+                  major, and more.
                 </p>
 
-
                 <div className="flex flex-col items-center space-y-4">
-                  
                   <button
                     onClick={toggleImage}
                     className="block text-center text-[#fff] border border-[#fff] rounded-lg p-2 cursor-pointer hover:bg-[#4b4b4b] transition"
@@ -750,7 +732,6 @@ export default function Chat() {
                     {showImage ? 'Hide Example' : 'Show Example'}
                   </button>
 
-                  
                   {showImage && (
                     <div className="flex justify-center mt-4">
                       <img
@@ -768,11 +749,21 @@ export default function Chat() {
                     className="block text-center text-[#fff] border border-[#fff] rounded-lg p-2 cursor-pointer hover:bg-[#4b4b4b] transition"
                   >
                     Select a Transcript File
-                    <input type="file" id="fileInput" accept=".pdf" onChange={handleFileChange} className="hidden" />
+                    <input
+                      type="file"
+                      id="fileInput"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
                   </label>
                   {selectedFile && (
-                    <p className="text-sm" style={{ color: 'rgba(6, 147, 227, 1)' }}>
-                      Selected file: <span className="font-semibold">{selectedFile.name}</span>
+                    <p
+                      className="text-sm"
+                      style={{ color: 'rgba(6, 147, 227, 1)' }}
+                    >
+                      Selected file:{' '}
+                      <span className="font-semibold">{selectedFile.name}</span>
                     </p>
                   )}
                   <button
