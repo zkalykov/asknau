@@ -535,34 +535,32 @@ export default function Chat() {
         </div>
       </div>
 
-      {/* FLOATING 'X' */}
-      {sidebarOpen && (
-        <button
-          className="close-sidebar-btn-floating"
-          onClick={() => setSidebarOpen(false)}
-        >
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
-      )}
-
       {/* MAIN CONTENT */}
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
         {/* HEADER */}
         <div className="header">
-          {/* Hamburger icon always bars */}
-          <button className="hamburger-btn" onClick={() => setSidebarOpen(true)}>
-            <FontAwesomeIcon icon={faBars} />
-          </button>
-
-          {/* AskNAU on the right */}
-          <div style={{ marginLeft: 'auto', textAlign: 'right' }}>
-            <span className="text-2xl font-bold"></span>
+          {/* NAU AI on the left */}
+          <div>
             <span
+              className="text-2xl font-bold"
               style={{ color: 'rgba(6,147,227,1)' }}
-              className="text-2xl font-bold ml-2"
             >
               NAU AI
             </span>
+          </div>
+
+          {/* Toggle button on the right (bars <-> times) */}
+          <div style={{ marginLeft: 'auto' }}>
+            <button
+              className="hamburger-btn"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              {sidebarOpen ? (
+                <FontAwesomeIcon icon={faTimes} />
+              ) : (
+                <FontAwesomeIcon icon={faBars} />
+              )}
+            </button>
           </div>
         </div>
 
