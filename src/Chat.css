@@ -502,12 +502,38 @@ body {
 
 .sidebar-item-logout:hover {
   background-color: #242424;
-  color: rgba(6,147,227,1) !important;
+  color: rgba(6,147,227,1);
 }
 
 /* NARROW SIDEBAR FOR MOBILE */
 @media (max-width: 768px) {
   .sidebar {
     width: 70%;
+  }
+}
+
+/* 
+ * ONE-TIME HIGHLIGHT FOR "Say Hello to AskNAU !" (word by word, no movement, 1s wait before first)
+ */
+.highlight-container {
+  /* Container is just to hold the text, no special styling needed 
+     beyond letting each word run its own animation. */
+}
+
+.highlight-word {
+  animation: highlightWord 0.8s ease-out 1;
+  animation-fill-mode: none; /* After anim ends, revert to original color. */
+  display: inline-block;
+}
+
+@keyframes highlightWord {
+  0% {
+    color: #e0e0e0; /* the default text color */
+  }
+  50% {
+    color: rgba(6,147,227,1); /* bright highlight */
+  }
+  100% {
+    color: #e0e0e0; /* revert to original color */
   }
 }

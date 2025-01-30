@@ -571,8 +571,22 @@ export default function Chat() {
           onScroll={handleChatBodyScroll}
         >
           {noChatSelected && (
-            <div className="flex items-center justify-center h-full text-3xl opacity-80">
-              Say Hello to AskNAU !
+            <div className="flex items-center justify-center h-full text-3xl opacity-80 highlight-container">
+              {
+                // Split phrase by spaces so each word highlights in sequence,
+                // after a 1s wait.
+                'Say Hello to NAU AI !'
+                  .split(' ')
+                  .map((word, i) => (
+                    <span
+                      key={i}
+                      className="highlight-word"
+                      style={{ animationDelay: `${1 + i * 0.4}s` }}
+                    >
+                      {word}&nbsp;
+                    </span>
+                  ))
+              }
             </div>
           )}
 
@@ -628,7 +642,7 @@ export default function Chat() {
                   sendMessage();
                 }
               }}
-              placeholder="Message AskNAU..."
+              placeholder="Message NAU AI..."
               autoComplete="off"
               className="flex-grow p-2 bg-gray-800 text-white rounded-l-full"
             />
