@@ -38,21 +38,25 @@ function Login() {
     }
   };
 
+  // Handlers for Google and Microsoft authentication
+  const handleGoogleLogin = () => {
+    window.location.href = 'https://asknau-backend-20d79e207a54.herokuapp.com/auth/google';
+  };
+
+  const handleMicrosoftLogin = () => {
+    window.location.href = 'https://asknau-backend-20d79e207a54.herokuapp.com/auth/microsoft';
+  };
+
   return (
     <div className="login-page">
       <div className="login-container">
         <h2 className="login-title">Sign In</h2>
         <p className="register-link">
-          Don't know what is AskNAU - {' '}
-          <Link to="/demo">
-            Watch Demo
-          </Link>
+          Don't know what is AskNAU? <Link to="/demo">Watch Demo</Link>
         </p>
-        <br></br>
+        <br />
         <form onSubmit={handleLoginSubmit}>
-          {errorMessage && (
-            <div className="error-message">{errorMessage}</div>
-          )}
+          {errorMessage && <div className="error-message">{errorMessage}</div>}
           <div className="input-field">
             <input
               type="email"
@@ -74,13 +78,25 @@ function Login() {
           <button type="submit" className="login-button">
             Login
           </button>
-          <p className="register-link">
-            Don't have an account?{' '}
-            <Link to="/register">
-              Register
-            </Link>
+                <p className="register-link">
+                  <Link to="/forgot-password">Forgot password?</Link>
+                </p>
+                          <p className="register-link">
+            Don't have an account? <Link to="/register">Register</Link>
           </p>
         </form>
+
+        {/* Google and Microsoft Login Buttons */}
+        <div className="social-login">
+          <button className="social-button google-login" onClick={handleGoogleLogin}>
+            <img src="google_logo.png" alt="Google" />
+            Continue with Google
+          </button>
+          <button className="social-button microsoft-login" onClick={handleMicrosoftLogin}>
+            <img src="microsoft_logo.png" alt="Microsoft" />
+            Continue with Microsoft Account
+          </button>
+        </div>
       </div>
     </div>
   );
