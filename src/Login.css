@@ -96,3 +96,89 @@
     margin: 0 10px;
   }
 }
+
+
+
+
+
+/*Register*/
+
+.password-strength-meter {
+  height: 5px;
+  width: 100%;
+  background-color: #ddd;
+  margin-top: 5px;
+  border-radius: 5px;
+}
+
+.password-strength-bar {
+  height: 5px;
+  border-radius: 5px;
+  transition: width 0.3s ease-in-out;
+}
+
+.password-strength-text {
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.password-requirements {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+
+/*Login with Google*/
+/* Social login button container */
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* General styling for social login buttons */
+.social-button {
+  width: 100%;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.social-button img {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+/* Google login button */
+.google-login {
+background-color: #0e0e0e;
+  color: #aaa;
+}
+
+.google-login:hover {
+  background-color: #333333;
+}
+
+/* Microsoft login button */
+.microsoft-login {
+  background-color: #0e0e0e;
+  color: #aaa;
+}
+
+.microsoft-login:hover {
+  background-color: #333333;
+}
+
+
+/*Forgot Pas*/

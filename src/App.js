@@ -6,6 +6,7 @@ import Login from './Login';
 import Register from './Register';
 import Demo from './Demo';
 import NotFound from './NotFound'; // Import the NotFound component
+import ForgotPassword from './ForgotPassword';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/demo" element={<Demo />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
