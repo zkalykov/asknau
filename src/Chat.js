@@ -554,6 +554,10 @@ export default function Chat() {
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
         {/* HEADER */}
         <div className="header">
+<<<<<<< HEAD
+=======
+          {/* NAU AI on the left */}
+>>>>>>> 10f5394c8f617945cdfb23032e702f120a344d6a
           <div>
             <span
               className="text-2xl font-bold"
@@ -562,6 +566,11 @@ export default function Chat() {
               NAU AI
             </span>
           </div>
+<<<<<<< HEAD
+=======
+
+          {/* Toggle button on the right (bars <-> times) */}
+>>>>>>> 10f5394c8f617945cdfb23032e702f120a344d6a
           <div style={{ marginLeft: 'auto' }}>
             <button
               className="hamburger-btn"
@@ -807,7 +816,14 @@ export default function Chat() {
                   </button>
                 </div>
               </div>
+<<<<<<< HEAD
             )}
+=======
+            )} 
+            <button onClick={closeModal} className="modal-close-button">
+              Close
+            </button>
+>>>>>>> 10f5394c8f617945cdfb23032e702f120a344d6a
           </div>
         </div>
       )}
