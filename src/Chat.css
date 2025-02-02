@@ -368,7 +368,7 @@ body {
  * MODAL CLOSE BUTTON 
  */
 
-.modal-close-button {
+ .modal-close-button {
   padding: 10px 20px;
   background-color: #333;
   color: #fff;
@@ -514,11 +514,10 @@ body {
 
 /* 
  * ONE-TIME HIGHLIGHT FOR "Say Hello to AskNAU !" (word by word, no movement, 1s wait before first)
- */
-.highlight-container {
-  /* Container is just to hold the text, no special styling needed 
-     beyond letting each word run its own animation. */
-}
+
+
+*/
+
 
 .highlight-word {
   animation: highlightWord 0.8s ease-out 1;
@@ -536,4 +535,19 @@ body {
   100% {
     color: #e0e0e0; /* revert to original color */
   }
+}
+
+
+.edit-profile-button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-profile-button:hover {
+  background-color: rgba(6, 147, 227, 1);
 }

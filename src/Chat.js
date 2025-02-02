@@ -46,8 +46,8 @@ function CopyButton({ text }) {
         </svg>
       ) : (
         <svg fill="currentColor" viewBox="0 0 20 20">
-          <path d="M8 2a2 2 0 00-2 2v2h2V4h8v8h-2v2h2a 2 2 0 002-2V4a 2 2 0 00-2-2H8z"></path>
-          <path d="M2 8a2 2 0 012-2h8a 2 2 0 012 2v8a 2 2 0 01-2 2H4a2 2 0 01-2-2V8z"></path>
+          <path d="M8 2a2 2 0 00-2 2v2h2V4h8v8h-2v2h2a2 2 0 002-2V4a2 2 0 00-2-2H8z"></path>
+          <path d="M2 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8z"></path>
         </svg>
       )}
     </button>
@@ -95,6 +95,7 @@ export default function Chat() {
   const location = useLocation();
   const API_BASE_URL = 'https://asknau-backend-20d79e207a54.herokuapp.com';
 
+  // Message & input states
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [botTyping, setBotTyping] = useState(false);
@@ -113,6 +114,7 @@ export default function Chat() {
   const [chatHistory, setChatHistory] = useState([]);
   const [chatId, setChatId] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isHistoryLoading, setHistoryLoading] = useState(false);
 
   const chatBodyRef = useRef(null);
   const lastScrollTop = useRef(0);
@@ -267,6 +269,7 @@ export default function Chat() {
       navigate('/login');
       return;
     }
+    setHistoryLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/history`, {
         method: 'GET',
@@ -283,6 +286,8 @@ export default function Chat() {
       setChatHistory(data.history || []);
     } catch {
       // Silent
+    } finally {
+      setHistoryLoading(false);
     }
   }, [navigate, API_BASE_URL]);
 
@@ -380,6 +385,16 @@ export default function Chat() {
       localStorage.removeItem('token');
       navigate('/login');
     }
+    setSidebarOpen(false);
+  };
+
+  // NEW: Handle Edit Profile button click
+// In Chat.js (inside your Chat component)
+  const handleEditProfile = () => {
+    // Navigate to the Edit Profile page
+    navigate('/edit-profile');
+    // Optionally, close the modal and the sidebar
+    closeModal();
     setSidebarOpen(false);
   };
 
@@ -539,7 +554,6 @@ export default function Chat() {
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
         {/* HEADER */}
         <div className="header">
-          {/* NAU AI on the left */}
           <div>
             <span
               className="text-2xl font-bold"
@@ -548,8 +562,6 @@ export default function Chat() {
               NAU AI
             </span>
           </div>
-
-          {/* Toggle button on the right (bars <-> times) */}
           <div style={{ marginLeft: 'auto' }}>
             <button
               className="hamburger-btn"
@@ -573,8 +585,6 @@ export default function Chat() {
           {noChatSelected && (
             <div className="flex items-center justify-center h-full text-3xl opacity-80 highlight-container">
               {
-                // Split phrase by spaces so each word highlights in sequence,
-                // after a 1s wait.
                 'Say Hello to NAU AI !'
                   .split(' ')
                   .map((word, i) => (
@@ -688,23 +698,33 @@ export default function Chat() {
 
             {/* PROFILE MODAL */}
             {modalContent === 'Profile' && (
-              <div className="space-y-4 modal-content">
-                <p>
-                  <span className="font-semibold">Name:</span> {userName}
-                </p>
-                <p>
-                  <span className="font-semibold">Email:</span> {userEmail}
-                </p>
-                <div className="disclaimer">
-                  For profile questions, contact zkalykov@na.edu
-                </div>
+            <div className="space-y-4 modal-content">
+              <p>
+                <span className="font-semibold">Name:</span> {userName}
+              </p>
+              <p>
+                <span className="font-semibold">Email:</span> {userEmail}
+              </p>
+              <div className="disclaimer">
+                For profile questions, contact zkalykov@na.edu
               </div>
-            )}
+              <div className="modal-actions">
+                <button onClick={handleEditProfile} className="edit-profile-button">
+                  Edit Profile
+                </button>
+                <button onClick={closeModal} className="modal-close-button">
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
 
             {/* HISTORY MODAL */}
             {modalContent === 'History' && (
               <div className="space-y-4 modal-content">
-                {chatHistory && chatHistory.length > 0 ? (
+                {isHistoryLoading ? (
+                  <div>Loading history...</div>
+                ) : chatHistory && chatHistory.length > 0 ? (
                   chatHistory.map((h, idx) => (
                     <div
                       key={idx}
@@ -788,10 +808,6 @@ export default function Chat() {
                 </div>
               </div>
             )}
-
-            <button onClick={closeModal} className="modal-close-button">
-              Close
-            </button>
           </div>
         </div>
       )}
