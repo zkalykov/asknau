@@ -388,8 +388,7 @@ export default function Chat() {
     setSidebarOpen(false);
   };
 
-  // NEW: Handle Edit Profile button click
-// In Chat.js (inside your Chat component)
+  // Handle Edit Profile button click
   const handleEditProfile = () => {
     // Navigate to the Edit Profile page
     navigate('/edit-profile');
@@ -554,10 +553,6 @@ export default function Chat() {
       <div className="w-full h-full flex flex-col max-w-4xl mx-auto">
         {/* HEADER */}
         <div className="header">
-<<<<<<< HEAD
-=======
-          {/* NAU AI on the left */}
->>>>>>> 10f5394c8f617945cdfb23032e702f120a344d6a
           <div>
             <span
               className="text-2xl font-bold"
@@ -566,11 +561,6 @@ export default function Chat() {
               NAU AI
             </span>
           </div>
-<<<<<<< HEAD
-=======
-
-          {/* Toggle button on the right (bars <-> times) */}
->>>>>>> 10f5394c8f617945cdfb23032e702f120a344d6a
           <div style={{ marginLeft: 'auto' }}>
             <button
               className="hamburger-btn"
@@ -611,9 +601,7 @@ export default function Chat() {
 
           {!noChatSelected &&
             messages.map((message, index) => {
-              const messageClass = message.isUser
-                ? 'user-message'
-                : 'bot-message';
+              const messageClass = message.isUser ? 'user-message' : 'bot-message';
               return (
                 <div key={index} className={`message ${messageClass}`}>
                   {message.isUser ? (
@@ -707,26 +695,26 @@ export default function Chat() {
 
             {/* PROFILE MODAL */}
             {modalContent === 'Profile' && (
-            <div className="space-y-4 modal-content">
-              <p>
-                <span className="font-semibold">Name:</span> {userName}
-              </p>
-              <p>
-                <span className="font-semibold">Email:</span> {userEmail}
-              </p>
-              <div className="disclaimer">
-                For profile questions, contact zkalykov@na.edu
+              <div className="space-y-4 modal-content">
+                <p>
+                  <span className="font-semibold">Name:</span> {userName}
+                </p>
+                <p>
+                  <span className="font-semibold">Email:</span> {userEmail}
+                </p>
+                <div className="disclaimer">
+                  For profile questions, contact zkalykov@na.edu
+                </div>
+                <div className="modal-actions">
+                  <button onClick={handleEditProfile} className="edit-profile-button">
+                    Edit Profile
+                  </button>
+                  <button onClick={closeModal} className="modal-close-button">
+                    Close
+                  </button>
+                </div>
               </div>
-              <div className="modal-actions">
-                <button onClick={handleEditProfile} className="edit-profile-button">
-                  Edit Profile
-                </button>
-                <button onClick={closeModal} className="modal-close-button">
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
+            )}
 
             {/* HISTORY MODAL */}
             {modalContent === 'History' && (
@@ -750,6 +738,9 @@ export default function Chat() {
                 ) : (
                   <div>No history found.</div>
                 )}
+                <button onClick={closeModal} className="modal-close-button">
+                  Close
+                </button>
               </div>
             )}
 
@@ -815,15 +806,11 @@ export default function Chat() {
                     Send Transcript
                   </button>
                 </div>
+                <button onClick={closeModal} className="modal-close-button">
+                  Close
+                </button>
               </div>
-<<<<<<< HEAD
             )}
-=======
-            )} 
-            <button onClick={closeModal} className="modal-close-button">
-              Close
-            </button>
->>>>>>> 10f5394c8f617945cdfb23032e702f120a344d6a
           </div>
         </div>
       )}
