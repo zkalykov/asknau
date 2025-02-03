@@ -655,7 +655,7 @@ export default function Chat() {
             </button>
           </div>
           <div className="disclaimer">
-            This is early version. Please check information before use !!!
+            Please check information before use,  we are updating to better model, stay tuned!
           </div>
         </div>
 
