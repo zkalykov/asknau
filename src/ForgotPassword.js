@@ -1,6 +1,9 @@
 // src/ForgotPassword.js
+'use client';
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+
 import './Login.css'; // Reusing the same styles from Login.css
 import 'tailwindcss/tailwind.css';
 
@@ -69,7 +72,7 @@ function ForgotPassword() {
             Send Reset Link
           </button>
           <p className="register-link">
-            Remembered your password? <Link to="/login">Login</Link>
+            Remembered your password? <Link href="/login">Login</Link>
           </p>
         </form>
       </div>

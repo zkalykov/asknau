@@ -1,6 +1,9 @@
 // src/Register.js
+'use client';
+
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import './Login.css';
 import 'tailwindcss/tailwind.css';
 
@@ -12,7 +15,7 @@ function Register() {
   const [errorMessage, setErrorMessage] = useState('');
   const [passwordStrength, setPasswordStrength] = useState({ level: '', color: '', width: '0%' });
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Email validation function
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -29,22 +32,22 @@ function Register() {
 
     if (password.length === 0) {
       strength = { level: '', color: 'transparent', width: '0%' };
-    } 
+    }
     else if (password.length < 8) {
       strength = { level: 'Weak', color: 'red', width: '33%' };
-    } 
+    }
     else if (onlyLowercaseLetters) {
       strength = { level: 'Weak', color: 'red', width: '33%' };
-    } 
+    }
     else if (onlyUppercaseLetters) {
       strength = { level: 'Good', color: 'orange', width: '66%' };
-    } 
+    }
     else if ([hasUppercase, hasDigit, hasSpecialChar].filter(Boolean).length === 1) {
       strength = { level: 'Good', color: 'orange', width: '66%' };
-    } 
+    }
     else if ([hasUppercase, hasDigit, hasSpecialChar].filter(Boolean).length === 2) {
       strength = { level: 'Good', color: 'orange', width: '66%' };
-    } 
+    }
     else if (hasUppercase && hasDigit && hasSpecialChar) {
       strength = { level: 'Strong', color: 'green', width: '100%' };
     }
@@ -86,7 +89,7 @@ function Register() {
       const data = await response.json();
 
       if (response.ok) {
-        navigate('/login');
+        router.push('/login');
       } else {
         setErrorMessage(data.error || 'Registration failed');
       }
@@ -109,7 +112,7 @@ function Register() {
       <div className="login-container">
         <h2 className="login-title">Sign Up</h2>
         <p className="register-link">
-          Don't know what is AskNAU? <Link to="/demo">Watch Demo</Link>
+          Don't know what is AskNAU? <Link href="/demo">Watch Demo</Link>
         </p>
         <br />
         <form onSubmit={handleSignUpSubmit}>
@@ -178,7 +181,7 @@ function Register() {
             Register
           </button>
           <p className="register-link">
-            Already have an account? <Link to="/login">Sign In</Link>
+            Already have an account? <Link href="/login">Sign In</Link>
           </p>
         </form>
 

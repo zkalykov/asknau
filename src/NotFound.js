@@ -1,7 +1,10 @@
 // src/NotFound.js
+'use client';
+
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './Chat.css'; 
+import Link from 'next/link';
+
+import './Chat.css';
 
 function NotFound() {
   return (
@@ -10,7 +13,7 @@ function NotFound() {
         <h1 className="text-6xl font-bold text-white mb-4">404</h1>
         <p className="text-2xl text-gray-300 mb-6">Page Not Found</p>
         <Link
-          to="/"
+          href="/"
           className="text-[rgba(6,147,227,1)] hover:underline text-lg"
         >
           Go to Home

@@ -1,6 +1,10 @@
 // src/Login.js
+'use client';
+
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
 import './Login.css';
 import 'tailwindcss/tailwind.css';
 
@@ -8,7 +12,7 @@ function Login() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +33,7 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        navigate('/chat');
+        router.push('/chat');
       } else {
         setErrorMessage(data.error || 'Login failed');
       }
@@ -52,7 +56,7 @@ function Login() {
       <div className="login-container">
         <h2 className="login-title">Sign In</h2>
         <p className="register-link">
-          Don't know what is AskNAU? <Link to="/demo">Watch Demo</Link>
+          Don't know what is AskNAU? <Link href="/demo">Watch Demo</Link>
         </p>
         <br />
         <form onSubmit={handleLoginSubmit}>
@@ -78,11 +82,11 @@ function Login() {
           <button type="submit" className="login-button">
             Login
           </button>
-                <p className="register-link">
-                  <Link to="/forgot-password">Forgot password?</Link>
-                </p>
-                          <p className="register-link">
-            Don't have an account? <Link to="/register">Register</Link>
+          <p className="register-link">
+            <Link href="/forgot-password">Forgot password?</Link>
+          </p>
+          <p className="register-link">
+            Don't have an account? <Link href="/register">Register</Link>
           </p>
         </form>
 

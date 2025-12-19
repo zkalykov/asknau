@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
+
 import './Demo.css';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -37,7 +40,7 @@ function Demo() {
             </a>
           </li>
           <li>
-            <Link className={'try-now'} to="/chat">
+            <Link className={'try-now'} href="/chat">
               <FontAwesomeIcon icon={faUpRightFromSquare} style={{ marginRight: '10px' }} />
               Try Now
             </Link>
@@ -48,7 +51,7 @@ function Demo() {
       <h1 className='first-word'>First ever AI assistant for NAU students</h1>
       <h1 className='second-word'>Meet AskNAU</h1>
       <center>
-        <Link className={'click-here'} to="/chat">
+        <Link className={'click-here'} href="/chat">
           <FontAwesomeIcon icon={faUpRightFromSquare} style={{ marginRight: '10px' }} />
           Click here to start
         </Link>
@@ -56,10 +59,10 @@ function Demo() {
       <div className="demo-content">
         <video
           src="/demo_asknau.mov"
-          autoPlay     
-          loop         
-          muted        
-          playsInline  
+          autoPlay
+          loop
+          muted
+          playsInline
           style={{ width: '100%', height: 'auto' }}
         />
       </div>
@@ -68,7 +71,7 @@ function Demo() {
       <div className="can-do">
         <div className="feature">
           <h3>
-            <FontAwesomeIcon icon={faFile}style={{ marginRight: '10px' }}  />
+            <FontAwesomeIcon icon={faFile} style={{ marginRight: '10px' }} />
             Courses
           </h3>
           <p>AskNAU can provide information about courses and its prerequisites.</p>
@@ -89,13 +92,13 @@ function Demo() {
         </div>
       </div>
 
-      
+
 
 
       <h1 className='read-more'>
-      <FontAwesomeIcon icon={faArrowDown} style={{ marginRight: '10px' }} />
-          Read More
-        </h1>
+        <FontAwesomeIcon icon={faArrowDown} style={{ marginRight: '10px' }} />
+        Read More
+      </h1>
       <div className="how-works">
 
         <h3>Project idea</h3>
@@ -121,17 +124,17 @@ function Demo() {
         {/* <img src="chat-first-pic.png" alt="Project Illustration" className="how-works-image" /> */}
         <p>Feel free to submit your pull requests on Github. Source code: <a className='highlight-yellow' href="https://github.com/zkalykov/asknau">https://github.com/zkalykov/asknau</a> !</p>
         <p>If you have questions feel free to connect me at <a className='highlight-yellow' href="mailto:zkalykov@na.edu">zkalykov@na.edu</a></p>
-        
+
       </div>
-      
-      
+
+
 
 
       <div className="footer">
         © AskNAU. All rights reserved.
       </div>
 
-      
+
     </div>
   );
 }

@@ -1,8 +1,11 @@
 // src/Chat.js
+'use client';
+
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './Chat.css';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useRouter, useSearchParams } from 'next/navigation';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,
@@ -91,8 +94,9 @@ function typeBotMessage(answer, setMessages, setBotTyping) {
  * -------------------------
  */
 export default function Chat() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const API_BASE_URL = 'https://asknau-backend-20d79e207a54.herokuapp.com';
 
   const [messages, setMessages] = useState([]);
@@ -122,10 +126,9 @@ export default function Chat() {
   const toggleImage = () => setShowImage(!showImage);
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const newChatId = queryParams.get('id');
+    const newChatId = searchParams.get('id');
     setUrlChatId(newChatId);
-  }, [location.search]);
+  }, [searchParams]);
 
   /* SCROLL TO BOTTOM */
   const scrollToBottom = useCallback(() => {
@@ -142,7 +145,7 @@ export default function Chat() {
   const fetchUserProfile = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      router.push('/login');
       return;
     }
     try {
@@ -152,7 +155,7 @@ export default function Chat() {
       });
       if (response.status === 401) {
         localStorage.removeItem('token');
-        navigate('/login');
+        router.push('/login');
         return;
       }
       if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
@@ -162,7 +165,7 @@ export default function Chat() {
     } catch {
       // Silent
     }
-  }, [navigate, API_BASE_URL]);
+  }, [router, API_BASE_URL]);
 
   /* APPEND MESSAGE */
   const appendMessage = (content, isUser = true, user_message_type = 'text') => {
@@ -187,7 +190,7 @@ export default function Chat() {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      router.push('/login');
       return;
     }
 
@@ -206,7 +209,7 @@ export default function Chat() {
 
       if (response.status === 401) {
         localStorage.removeItem('token');
-        navigate('/login');
+        router.push('/login');
         return;
       }
       if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
@@ -218,7 +221,7 @@ export default function Chat() {
       } else {
         if (!chatId && data.chat_id) {
           setChatId(data.chat_id);
-          navigate(`/chat?id=${data.chat_id}`);
+          router.push(`/chat?id=${data.chat_id}`);
         } else {
           setChatId(data.chat_id);
         }
@@ -264,7 +267,7 @@ export default function Chat() {
   const fetchHistory = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      router.push('/login');
       return;
     }
     try {
@@ -274,7 +277,7 @@ export default function Chat() {
       });
       if (response.status === 401) {
         localStorage.removeItem('token');
-        navigate('/login');
+        router.push('/login');
         return;
       }
       if (!response.ok) return;
@@ -284,7 +287,7 @@ export default function Chat() {
     } catch {
       // Silent
     }
-  }, [navigate, API_BASE_URL]);
+  }, [router, API_BASE_URL]);
 
   const handleHistoryClick = (e) => {
     e.preventDefault();
@@ -297,7 +300,7 @@ export default function Chat() {
     async (id) => {
       const token = localStorage.getItem('token');
       if (!token) {
-        navigate('/login');
+        router.push('/login');
         return;
       }
 
@@ -308,7 +311,7 @@ export default function Chat() {
         });
         if (response.status === 401) {
           localStorage.removeItem('token');
-          navigate('/login');
+          router.push('/login');
           return;
         }
         if (!response.ok) throw new Error('Failed to fetch chat messages');
@@ -342,14 +345,14 @@ export default function Chat() {
         // Silent
       }
     },
-    [navigate, API_BASE_URL]
+    [router, API_BASE_URL]
   );
 
   const loadSelectedHistory = (selectedChatId) => {
     setModalOpen(false);
     setMessages([]);
     setChatId(selectedChatId);
-    navigate(`/chat?id=${selectedChatId}`);
+    router.push(`/chat?id=${selectedChatId}`);
     loadChatMessages(selectedChatId);
   };
 
@@ -357,7 +360,7 @@ export default function Chat() {
     e.preventDefault();
     setChatId(null);
     setMessages([]);
-    navigate('/chat');
+    router.push('/chat');
     setSidebarOpen(false);
   };
 
@@ -375,10 +378,10 @@ export default function Chat() {
         // Silent
       }
       localStorage.removeItem('token');
-      navigate('/login');
+      router.push('/login');
     } else {
       localStorage.removeItem('token');
-      navigate('/login');
+      router.push('/login');
     }
     setSidebarOpen(false);
   };
@@ -397,7 +400,7 @@ export default function Chat() {
 
     const token = localStorage.getItem('token');
     if (!token) {
-      navigate('/login');
+      router.push('/login');
       return;
     }
 
@@ -413,7 +416,7 @@ export default function Chat() {
       });
       if (response.status === 401) {
         localStorage.removeItem('token');
-        navigate('/login');
+        router.push('/login');
         return;
       }
       if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
@@ -421,7 +424,7 @@ export default function Chat() {
       const data = await response.json();
       if (!chatId && data.chat_id) {
         setChatId(data.chat_id);
-        navigate(`/chat?id=${data.chat_id}`);
+        router.push(`/chat?id=${data.chat_id}`);
       }
 
       closeModal();
@@ -446,7 +449,7 @@ export default function Chat() {
 
         if (resp.status === 401) {
           localStorage.removeItem('token');
-          navigate('/login');
+          router.push('/login');
           return;
         }
         if (!resp.ok) throw new Error(`Server error: ${resp.statusText}`);
@@ -520,7 +523,7 @@ export default function Chat() {
             className="sidebar-item"
             onClick={(e) => {
               e.preventDefault();
-              navigate('/demo');
+              router.push('/demo');
               setSidebarOpen(false);
             }}
           >
@@ -682,8 +685,8 @@ export default function Chat() {
               {modalContent === 'Profile'
                 ? 'Profile'
                 : modalContent === 'History'
-                ? 'History'
-                : 'Attachment'}
+                  ? 'History'
+                  : 'Attachment'}
             </h2>
 
             {/* PROFILE MODAL */}
